@@ -65,7 +65,7 @@ class CustomerController extends Controller
                         ? '<div><small><strong>' . strtoupper($row->jenis_pembelian) . '</strong></small></div>'
                         : '';
 
-                    $btn = '<a href="' . route('cetak.subsidi', $row->id) . '" target="_blank" class="btn btn-warning btn-sm mt-1">
+                    $btn = '<a href="' . route('cetak.subsidi', $row->id) . '" target="_blank" class="mt-1 btn btn-warning btn-sm">
                 Cetak Akad
             </a>';
 
@@ -896,6 +896,13 @@ class CustomerController extends Controller
         $customer = Customer::with(['kavling', 'lokasiKavling'])
             ->findOrFail($id_customer);
 
+        $konfigurasi = KonfigurasiAplikasi::first();
+
+        $alamat = $konfigurasi->alamat ?? '-';
+        $email = $konfigurasi->email ?? '-';
+        $no_telp_dev = $konfigurasi->telp ?? '-';
+
+        $noKavling = $customer->kavling->pluck('no')->first() ?? '-';
         $kodeKavling = $customer->kavling->pluck('kode_kavling')->implode(', ') ?? '-';
         $luasTanah = $customer->kavling->sum('luas_tanah');
         $sumHrgKavling = $customer->kavling->sum('hrg_jual');
@@ -914,13 +921,7 @@ class CustomerController extends Controller
             $sisa = 0;
         }
 
-        if ($customer->jenis_pembelian == 'Kredit') {
-            $templatePath = public_path('template/template_akad_kredit.docx');
-        } elseif ($customer->jenis_pembelian == 'Cash Keras') {
-            $templatePath = public_path('template/template_akad_cash.docx');
-        } else {
-            $templatePath = public_path('template/template_akad_kredit.docx');
-        }
+        $templatePath = public_path('template/ppjb_template.docx');
 
         $templateProcessor = new TemplateProcessor($templatePath);
 
@@ -934,7 +935,10 @@ class CustomerController extends Controller
         $lastNumber = Customer::count() + 1;
         $nomorUrut = str_pad($lastNumber, 3, '0', STR_PAD_LEFT);
 
-        // Required variables as requested by USER
+        $templateProcessor->setValue('alamat', $alamat);
+        $templateProcessor->setValue('email', $email);
+        $templateProcessor->setValue('no_telp_dev', $no_telp_dev);
+
         $templateProcessor->setValue('no', $nomorUrut);
         $templateProcessor->setValue('bulan_romawi', $bulanRomawi);
         $templateProcessor->setValue('tahun', $tahun);
@@ -942,11 +946,13 @@ class CustomerController extends Controller
         $templateProcessor->setValue('tanggal', $tanggal);
         $templateProcessor->setValue('bulan', $bulan);
 
-        $templateProcessor->setValue('nama_lengkap', $customer->nama_lengkap ?? '-');
-        $templateProcessor->setValue('alamat', $customer->alamat ?? '-');
-        $templateProcessor->setValue('no_ktp', $customer->no_ktp ?? '-');
+        $templateProcessor->setValue('nama_cust', $customer->nama_lengkap ?? '-');
+        $templateProcessor->setValue('no_telp', $customer->no_telp ?? '-');
+        $templateProcessor->setValue('alamat_ktp', $customer->alamat ?? '-');
+        $templateProcessor->setValue('nik', $customer->no_ktp ?? '-');
 
         $templateProcessor->setValue('kode_kavling', $kodeKavling);
+        $templateProcessor->setValue('no_kavling', $noKavling);
         $templateProcessor->setValue('luas_tanah', $luasTanah);
 
         $templateProcessor->setValue('harga_jual', number_format($netHargaJual, 0, ',', '.'));

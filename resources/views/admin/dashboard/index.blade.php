@@ -11,15 +11,9 @@
                     <div class="card bg-warning text-white ">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">{{ $kuning }}</h3>
-                                <p class="card-text mb-0">Booking</p>
+                                <h3 class="card-title mb-1">{{ $jumlahKavling }}</h3>
+                                <p class="card-text mb-0">Jumlah Kavling</p>
                             </div>
-                        </div>
-                        <div class="card-footer bg-warning border-0 p-0">
-                            <a href="{{ route('booking.unit') }}"
-                                class="btn btn-link text-white text-decoration-none w-100 py-2 rounded-0">
-                                <small>Detail Data <i class="bi bi-arrow-right-circle"></i></small>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -28,15 +22,9 @@
                     <div class="card bg-success text-white ">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">{{ $hijau }}</h3>
-                                <p class="card-text mb-0">Akad</p>
+                                <h3 class="card-title mb-1">{{ $sudahLaku }}</h3>
+                                <p class="card-text mb-0">Sudah Laku</p>
                             </div>
-                        </div>
-                        <div class="card-footer bg-success border-0 p-0">
-                            <a href="{{ route('akad.unit') }}"
-                                class="btn btn-link text-white text-decoration-none w-100 py-2 rounded-0">
-                                <small>More info <i class="bi bi-arrow-right-circle"></i></small>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -45,32 +33,23 @@
                     <div class="card bg-secondary text-white ">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">{{ $totalLunas }}</h3>
-                                <p class="card-text mb-0">Kavling Lunas</p>
+                                <h3 class="card-title mb-1">{{ $sisaLaku }}</h3>
+                                <p class="card-text mb-0">Sisa</p>
                             </div>
-                        </div>
-                        <div class="card-footer bg-secondary border-0 p-0">
-                            <a href="{{ route('lunas.unit') }}"
-                                class="btn btn-link text-white text-decoration-none w-100 py-2 rounded-0">
-                                <small>More info <i class="bi bi-arrow-right-circle"></i></small>
-                            </a>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <div class="card bg-info text-white ">
+                    <div class="card bg-info text-white position-relative">
+                        <a href="{{ route('dashboard.detail-penjualan') }}" class="stretched-link"></a>
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">{{ $totalLokasiReady }}</h3>
-                                <p class="card-text mb-0">Kavling Ready</p>
+                                <h3 class="card-title mb-1">
+                                    <i class="bi bi-arrow-right-circle"></i>
+                                </h3>
+                                <p class="card-text mb-0">Detail Penjualan</p>
                             </div>
-                        </div>
-                        <div class="card-footer bg-info border-0 p-0">
-                            <a href="{{ route('kavlingReady.unit') }}"
-                                class="btn btn-link text-white text-decoration-none w-100 py-2 rounded-0">
-                                <small>More info <i class="bi bi-arrow-right-circle"></i></small>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -82,7 +61,7 @@
                     <div class="card shadow-sm border-0 overflow-hidden mb-4">
 
                         {{-- Header Bagian Atas (Pengganti widget-user-header) --}}
-                        <div class="card-header bg-primary text-white p-3">
+                        <div class="card-header bg-danger text-white p-3">
                             <div class="d-flex align-items-center">
                                 {{-- Bagian Gambar/Logo --}}
                                 <div class="flex-shrink-0 me-3">
@@ -94,7 +73,7 @@
 
                                 {{-- Bagian Teks Judul --}}
                                 <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold">Statistik Penjualan per Lokasi</h4>
+                                    <h4 class="mb-0 fw-bold text-white">Statistik Penjualan per Lokasi</h4>
                                     <p class="mb-0 text-white-50 small">
                                         <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                     </p>
@@ -189,7 +168,7 @@
                             </div>
 
                             <div class="flex-grow-1">
-                                <h4 class="mb-0 fw-bold">Statistik Unit Ready per Perumahan</h4>
+                                <h4 class="mb-0 fw-bold text-white">Statistik Unit Ready per Perumahan</h4>
                                 <p class="mb-0 text-white-50 small">
                                     <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                 </p>
@@ -237,12 +216,91 @@
             </div> --}}
 
             <div class="row">
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 overflow-hidden mb-4">
+                        <div class="card-header bg-primary text-white p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <img class="rounded-circle border border-2 border-white"
+                                        style="width: 65px; height: 65px; object-fit: cover;"
+                                        src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
+                                        alt="Avatar">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0 fw-bold text-white">Grafik Penjualan</h4>
+                                    <p class="mb-0 text-white-50 small">
+                                        <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-3 mb-4">
+                                <div class="col-5">
+                                    <select class="form-control select-tahun" name="tahun" id="tahun">
+                                        <option value="0">Semua Tahun</option>
+                                        @foreach ($years as $year)
+                                            <option value="{{ $year }}">{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <canvas id="barChart" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0 overflow-hidden mb-4">
+                        <div class="card-header bg-success text-white p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <img class="rounded-circle border border-2 border-white"
+                                        style="width: 65px; height: 65px; object-fit: cover;"
+                                        src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
+                                        alt="Avatar">
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0 fw-bold text-white">Grafik Penjualan Marketing</h4>
+                                    <p class="mb-0 text-white-50 small">
+                                        <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-3 mb-4">
+                                <div class="col-5">
+                                    <select class="form-control select-tahun" name="tahun_2" id="tahun_2">
+                                        <option value="0">Semua Tahun</option>
+                                        @foreach ($years as $year)
+                                            <option value="{{ $year }}">{{ $year }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-7">
+                                    <select class="form-control select-marketing" name="marketing" id="marketing">
+                                        <option value="0">Semua Marketing</option>
+                                        @foreach ($marketingList as $marketing)
+                                            <option value="{{ $marketing->id }}">{{ $marketing->nama_marketing }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <canvas id="lineChart" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
                 {{-- WIDGET 1: Statistik Status Progres --}}
                 <div class="col-md-6">
                     <div class="card shadow-sm border-0 overflow-hidden mb-4">
 
-                        {{-- Header: bg-warning --}}
-                        <div class="card-header bg-warning text-white p-3">
+                        {{-- Header: bg-primary --}}
+                        <div class="card-header bg-primary text-white p-3">
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
                                     <img class="rounded-circle border border-2 border-white"
@@ -251,7 +309,7 @@
                                         alt="User Avatar">
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold">Statistik Status Progres</h4>
+                                    <h4 class="mb-0 fw-bold text-white">Statistik Status Progres</h4>
                                     <p class="mb-0 text-white-50 small">
                                         <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                     </p>
@@ -273,7 +331,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($dataProgres as $item)
+                                        @forelse ($dataProgres as $item)
                                             <tr>
                                                 <td class="text-center">{{ $item['no'] }}</td>
                                                 <td class="fw-bold">{{ $item['status_progres'] }}</td>
@@ -281,12 +339,18 @@
                                                 <td class="text-end">{{ $item['persentase'] }} %</td>
                                                 <td class="text-center">
                                                     <a href="{{ route('dashboard.customer-status-progres-show', $item['id_status_progres']) }}"
-                                                        class="btn btn-warning btn-sm text-white rounded-pill px-3">
+                                                        class="btn btn-primary btn-sm text-white rounded-pill px-3">
                                                         Detail
                                                     </a>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center py-2 text-muted">
+                                                    Belum ada data
+                                                </td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
@@ -310,7 +374,7 @@
 
                                 {{-- Bagian Judul --}}
                                 <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold">Statistik Penjualan Marketing</h4>
+                                    <h4 class="mb-0 fw-bold text-white">Statistik Penjualan Marketing</h4>
                                     <p class="mb-0 text-white-50 small">
                                         <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                     </p>
@@ -332,7 +396,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($dataMarketing as $marketing)
+                                        @forelse ($dataMarketing as $marketing)
                                             <tr>
                                                 <td class="text-center">{{ $marketing['no'] }}</td>
                                                 <td class="fw-bold">{{ $marketing['marketing'] }}</td>
@@ -345,7 +409,13 @@
                                                     </a>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center py-2 text-muted">
+                                                    Belum ada data
+                                                </td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
@@ -357,5 +427,92 @@
     </div>
 @endsection
 @push('scripts')
-    <script></script>
+    <script>
+        const months = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        let barChart;
+        let lineChart;
+
+        function loadChart1() {
+            $.get("{{ route('dashboard.chart1') }}", {
+                tahun: $('#tahun').val()
+            }, function(response) {
+                if (barChart) barChart.destroy();
+
+                barChart = new Chart(document.getElementById('barChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Total Penjualan',
+                            data: response,
+                            backgroundColor: '#435ebe',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function loadChart2() {
+            $.get("{{ route('dashboard.chart2') }}", {
+                tahun: $('#tahun_2').val(),
+                marketing: $('#marketing').val()
+            }, function(response) {
+                if (lineChart) lineChart.destroy();
+
+                lineChart = new Chart(document.getElementById('lineChart'), {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Penjualan Marketing',
+                            data: response,
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        $(document).ready(function() {
+            $('.select-tahun').select2({
+                dropdownParent: $('body'),
+                width: '100%'
+            });
+            $('.select-marketing').select2({
+                dropdownParent: $('body'),
+                width: '100%'
+            });
+
+            loadChart1();
+            loadChart2();
+
+            $('#tahun').on('change', loadChart1);
+            $('#tahun_2, #marketing').on('change', loadChart2);
+        });
+    </script>
 @endpush

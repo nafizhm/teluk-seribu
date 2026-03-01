@@ -60,7 +60,7 @@ class SiteplanPenjualanController extends Controller
                 // Asumsi: Satu kavling pada satu waktu hanya dimiliki 1 customer aktif
                 $owner = $kavling->customer->first();
 
-                // Kita timpa relasi 'customer' di objek ini agar View blade tidak bingung 
+                // Kita timpa relasi 'customer' di objek ini agar View blade tidak bingung
                 // (View mengharapkan objek/null, bukan Collection)
                 if ($owner) {
                     // Set manual properti customer dengan data owner
@@ -439,7 +439,7 @@ class SiteplanPenjualanController extends Controller
         file_put_contents($svgPath, $svgContent);
 
         $endpoint = 'https://aplikasikavling.com/convert/proses.php';
-        $clientName = 'miliarder_group';
+        $clientName = 'tanah_kavling';
         $response = Http::attach('svg_file', file_get_contents($svgPath), $svgFilename)
             ->post($endpoint, ['client' => $clientName]);
 

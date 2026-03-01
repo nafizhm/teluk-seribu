@@ -43,12 +43,20 @@
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-    <style>
+     <style>
         /* Chrome, Safari, Edge, Opera */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+
+        body.light .user-info-text .username {
+            color: #fff important;
+        }
+
+        body.light .user-info-text .role {
+            color: #fff !important;
         }
 
         input[type=number] {
@@ -94,14 +102,6 @@
             border-color: #444;
         }
 
-        body.light .user-info-text .username {
-            color: #fff important;
-        }
-
-        body.light .user-info-text .role {
-            color: #fff !important;
-        }
-
         .select2-container .select2-selection--single {
             height: 38px;
             border: 1px solid #ced4da;
@@ -123,61 +123,41 @@
             line-height: 30px;
         }
 
-        body.dark .select2-container--default .select2-selection--multiple {
-            background-color: #1e1e2d;
-            border: 1px solid #444;
-            color: #fff;
-            min-height: 38px;
-            padding: 2px 12px;
+        .select2-container--default .select2-selection--single {
+            position: relative;
+            padding-right: 36px;
         }
 
-        body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #2c2f33;
-            border: 1px solid #555;
-            color: #fff;
-            border-radius: 4px;
-            padding: 1px 25px;
-
+        .select2-container--default .select2-selection--single::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #6c757d;
+            transform: translateY(-50%);
         }
 
-        body.dark .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: #fff;
-            margin-right: 4px;
+        body.dark .select2-container--default .select2-selection--single::after {
+            border-top-color: #ffffff;
         }
 
-        body.dark .select2-container--default .select2-selection--multiple .select2-selection__rendered {
-            color: #fff;
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0;
+            padding: 0;
+            z-index: 2;
         }
 
-        /* Dropdown item */
-        body.dark .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: #444;
-            color: #fff;
-        }
-
-        body.dark .select2-container--default .select2-results__option {
-            color: #fff;
-        }
-
-        body.light .select2-container--default .select2-selection--multiple {
-            background-color: #fff;
-            border: 1px solid #ced4da;
-            min-height: 38px;
-            padding: 2px 12px;
-        }
-
-        body.light .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #f0f0f0;
-            color: #333;
-            border-radius: 4px;
-            padding: 1px 25px;
-            border: 1px solid #ccc;
-
-        }
-
-        body.light .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-            color: #333;
-            margin-right: 4px;
+        .select2-container--default .select2-selection--single {
+            padding-right: 52px;
         }
 
         #main-navbar {
@@ -227,7 +207,6 @@
                 top: 60px;
                 left: 0;
                 right: 0;
-                z-index: 1000;
             }
 
             #main-menu.show {
@@ -298,8 +277,81 @@
         .card.border-danger.shadow {
             box-shadow: 0 0 10px rgba(220, 53, 69, .6) !important;
         }
-    </style>
 
+        #full-width {
+            margin: 2rem
+        }
+
+        #main-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 70px;
+            background-color: #1e1e2d;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark #main-navbar {
+            background-color: #1e1e2d;
+        }
+
+        body.light #main-navbar {
+            background-color: #ffffff;
+        }
+
+
+        #profileDropdown {
+            display: flex;
+            align-items: center;
+        }
+
+        #profileDropdown::after {
+            margin-left: 5px;
+            margin-top: 0;
+        }
+
+        #profileDropdown+.dropdown-menu {
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, 0.22),
+                0 4px 10px rgba(0, 0, 0, 0.18);
+        }
+
+        .navbar-shadow {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            background-color: #fff;
+        }
+
+        .submenu.tree-submenu {
+            position: relative !important;
+            padding-left: 15px !important;
+        }
+
+        .submenu.tree-submenu .submenu-item {
+            position: relative !important;
+            padding-left: 10px !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .submenu.tree-submenu .submenu-item::before {
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: -12px;
+            bottom: 0;
+            width: 0;
+            border-left: 2px dashed rgba(187, 187, 187, 0.6) !important;
+        }
+
+        .submenu.tree-submenu .submenu-item:last-child::before {
+            bottom: 10%;
+        }
+    </style>
 
 </head>
 
@@ -366,6 +418,7 @@
                         @foreach ($getmenus as $menu)
                             @php
                                 $hasChildren = isset($menu->children) && count($menu->children) > 0;
+                                $childCount = $hasChildren ? count($menu->children) : 0;
 
                                 $activeRoutes = $hasChildren
                                     ? $menu->children->pluck('route_name')->toArray()
@@ -376,35 +429,20 @@
                                 });
                             @endphp
 
-                            @if ($menu->title == 'Rombongan Belajar')
-                                <li
-                                    class="sidebar-item has-sub {{ str_starts_with(Route::currentRouteName(), 'rombel') ? 'active' : '' }}">
-                                    <a href="#" class="sidebar-link">
+                            @if ($hasChildren && $childCount === 1)
+                                @php
+                                    $child = $menu->children->first();
+                                    $isActiveSingle = Str::startsWith(
+                                        $currentRoute,
+                                        Str::before($child->route_name, '.'),
+                                    );
+                                @endphp
+
+                                <li class="sidebar-item {{ $isActiveSingle ? 'active' : '' }}">
+                                    <a href="{{ route($child->route_name) }}" class="sidebar-link">
                                         <i class="{{ $menu->icon }}"></i>
-                                        <span>{{ $menu->title }}</span>
+                                        <span>{{ $child->title }}</span>
                                     </a>
-                                    <ul class="submenu">
-                                        @if (!empty($tahunAjaranList))
-                                            @foreach ($tahunAjaranList as $tahun)
-                                                @php
-                                                    [$tahun1, $tahun2] = explode('/', $tahun->tahun);
-                                                    $isActive =
-                                                        request()->route('tahun1') . '/' . request()->route('tahun2') ==
-                                                        $tahun->tahun;
-                                                @endphp
-                                                <li class="submenu-item {{ $isActive ? 'active' : '' }}">
-                                                    <a href="{{ route('rombel.index', ['tahun1' => $tahun1, 'tahun2' => $tahun2]) }}"
-                                                        class="submenu-link">
-                                                        Rombel {{ $tahun->tahun }}
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        @else
-                                            <li class="submenu-item">
-                                                <a href="#" class="submenu-link">Belum ada Tahun Ajaran</a>
-                                            </li>
-                                        @endif
-                                    </ul>
                                 </li>
                                 @continue
                             @endif
@@ -415,7 +453,7 @@
                                         <i class="{{ $menu->icon }}"></i>
                                         <span>{{ $menu->title }}</span>
                                     </a>
-                                    <ul class="submenu">
+                                    <ul class="submenu tree-submenu">
                                         @foreach ($menu->children->sortBy('urutan') as $submenu)
                                             <li
                                                 class="submenu-item {{ Str::startsWith($currentRoute, Str::before($submenu->route_name, '.')) ? 'active' : '' }}">
@@ -427,6 +465,10 @@
                                     </ul>
                                 </li>
                             @else
+                                @if ($menu->route_name === '#')
+                                    @continue
+                                @endif
+
                                 <li
                                     class="sidebar-item {{ Str::startsWith($currentRoute, Str::before($menu->route_name, '.')) ? 'active' : '' }}">
                                     <a href="{{ route($menu->route_name) }}" class="sidebar-link">
@@ -465,7 +507,7 @@
     <script src="{{ asset('template/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
 
     <script src="{{ asset('template/assets/compiled/js/app.js') }}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {{-- <!-- Need: Apexcharts -->
     <script src="{{ asset('template/assets/extensions/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('template/assets/static/js/pages/dashboard.js') }}"></script> --}}

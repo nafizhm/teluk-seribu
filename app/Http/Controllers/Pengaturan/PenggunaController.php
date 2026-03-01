@@ -178,9 +178,9 @@ class PenggunaController extends Controller
             'surname'      => 'required',
             'username'     => 'required|unique:users,username,' . $data->id . ',id',
             'email'        => 'required|unique:users,email,' . $data->id . ',id',
-            'password'     => 'nullable|string|min:6',
+            'password'     => 'nullable|string|min:5',
             'status'       => 'required|in:AKTIF,BLOKIR',
-            'id_role'      => 'required',
+            // 'id_role'      => 'required',
             'id_marketing' => 'required_if:role,1',
 
         ], [
@@ -190,7 +190,7 @@ class PenggunaController extends Controller
             'email.required'           => 'Email wajib diisi.',
             'email.email'              => 'Format email tidak valid.',
             'email.unique'             => 'Email sudah digunakan.',
-            'password.min'             => 'Password minimal 6 karakter.',
+            'password.min'             => 'Password minimal 5 karakter.',
             'status.required'          => 'Status wajib dipilih.',
             'status.in'                => 'Status tidak valid.',
             'id_role.required'         => 'Role wajib dipilih.',
@@ -207,16 +207,7 @@ class PenggunaController extends Controller
                 'username'     => $request->username,
                 'email'        => $request->email,
                 'status'       => $request->status,
-                'id_role'      => $request->id_role,
-                'id_marketing' => $request->id_marketing ?? 0,
-            ];
-
-            $db = [
-                'surname'      => $request->surname,
-                'username'     => $request->username,
-                'email'        => $request->email,
-                'status'       => $request->status,
-                'id_role'      => $request->id_role,
+                // 'id_role'      => $request->id_role,
                 'id_marketing' => $request->id_marketing ?? 0,
             ];
 

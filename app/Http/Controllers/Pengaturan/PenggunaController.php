@@ -1,15 +1,11 @@
 <?php
-
 namespace App\Http\Controllers\Pengaturan;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Pengaturan\HakAksesController;
-use App\Models\Guru;
 use App\Models\HakAkses;
 use App\Models\Menu;
-use App\Models\Pengguna;
 use App\Models\Role;
-use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,16 +21,16 @@ class PenggunaController extends Controller
 
         if ($request->ajax()) {
             $data = User::with('role')
-                ->when(Auth::user()->username != 'dev', function ($query) {
-                    $query->where('username', '!=', 'dev');
+                ->when(Auth::id() != 1, function ($query) {
+                    $query->where('id', '!=', 1);
                 })
-                ->orderBy('id', 'desc');
+                ->orderByDesc('id');
 
             return DataTables::of($data)
                 ->addIndexColumn()
 
                 ->editColumn('role', function ($row) {
-                    if (!$row->role) {
+                    if (! $row->role) {
                         return '<span class="badge bg-secondary">Tidak Diketahui</span>';
                     }
 
@@ -86,7 +82,7 @@ class PenggunaController extends Controller
     {
         $list = User::find($id);
 
-        if (!$list) {
+        if (! $list) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data tidak ditemukan',
@@ -109,7 +105,7 @@ class PenggunaController extends Controller
             'email'        => 'required|email|unique:users,email',
             'password'     => 'required|min:6',
             'status'       => 'required|in:AKTIF,BLOKIR',
-            'id_role'         => 'required',
+            'id_role'      => 'required',
             'id_marketing' => 'required_if:role,1',
         ], [
             'surname.required'         => 'Nama lengkap wajib diisi.',
@@ -122,7 +118,7 @@ class PenggunaController extends Controller
             'password.min'             => 'Password minimal 6 karakter.',
             'status.required'          => 'Status wajib dipilih.',
             'status.in'                => 'Status tidak valid.',
-            'id_role.required'            => 'Role wajib dipilih.',
+            'id_role.required'         => 'Role wajib dipilih.',
             'id_marketing.required_if' => 'Marketing wajib dipilih.',
         ]);
 
@@ -135,7 +131,7 @@ class PenggunaController extends Controller
                 'email'        => $request->email,
                 'password'     => Hash::make($request->password),
                 'status'       => $request->status,
-                'id_role'         => $request->id_role,
+                'id_role'      => $request->id_role,
                 'id_marketing' => $request->id_marketing ?? 0,
             ];
 
@@ -169,7 +165,7 @@ class PenggunaController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi Kesalahan Pada Server!',
-                'error'  => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -184,7 +180,7 @@ class PenggunaController extends Controller
             'email'        => 'required|unique:users,email,' . $data->id . ',id',
             'password'     => 'nullable|string|min:6',
             'status'       => 'required|in:AKTIF,BLOKIR',
-            'id_role'         => 'required',
+            'id_role'      => 'required',
             'id_marketing' => 'required_if:role,1',
 
         ], [
@@ -197,7 +193,7 @@ class PenggunaController extends Controller
             'password.min'             => 'Password minimal 6 karakter.',
             'status.required'          => 'Status wajib dipilih.',
             'status.in'                => 'Status tidak valid.',
-            'id_role.required'            => 'Role wajib dipilih.',
+            'id_role.required'         => 'Role wajib dipilih.',
             'id_marketing.required_if' => 'Marketing wajib dipilih.',
 
         ]);
@@ -211,7 +207,7 @@ class PenggunaController extends Controller
                 'username'     => $request->username,
                 'email'        => $request->email,
                 'status'       => $request->status,
-                'id_role'         => $request->id_role,
+                'id_role'      => $request->id_role,
                 'id_marketing' => $request->id_marketing ?? 0,
             ];
 
@@ -220,7 +216,7 @@ class PenggunaController extends Controller
                 'username'     => $request->username,
                 'email'        => $request->email,
                 'status'       => $request->status,
-                'id_role'         => $request->id_role,
+                'id_role'      => $request->id_role,
                 'id_marketing' => $request->id_marketing ?? 0,
             ];
 
@@ -242,7 +238,7 @@ class PenggunaController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Pengguna gagal diubah!',
-                'error'  => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -262,7 +258,7 @@ class PenggunaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error'  => $e->getMessage(),
+                'error'   => $e->getMessage(),
                 'message' => 'Gagal menghapus Pengguna!',
             ], 500);
         }

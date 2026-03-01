@@ -240,7 +240,10 @@
                                     <select class="form-control select-tahun" name="tahun" id="tahun">
                                         <option value="0">Semua Tahun</option>
                                         @foreach ($years as $year)
-                                            <option value="{{ $year }}">{{ $year }}</option>
+                                            <option value="{{ $year }}"
+                                                {{ $year == now()->year ? 'selected' : '' }}>
+                                                {{ $year }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -274,7 +277,10 @@
                                     <select class="form-control select-tahun" name="tahun_2" id="tahun_2">
                                         <option value="0">Semua Tahun</option>
                                         @foreach ($years as $year)
-                                            <option value="{{ $year }}">{{ $year }}</option>
+                                            <option value="{{ $year }}"
+                                                {{ $year == now()->year ? 'selected' : '' }}>
+                                                {{ $year }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>

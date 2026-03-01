@@ -265,180 +265,349 @@ class PembayaranController extends Controller
         exit;
     }
 
-    public function cetak($id)
+      public function cetak($id)
     {
-        // Eager load customer dan relasi kavling (many-to-many)
-        $pembayaran = Pemasukan::with(['customer.kavling', 'customer.lokasiKavling', 'metode', 'kategori'])
-            ->where('id', $id)
-            ->where('keterangan', 'NOT LIKE', 'Biaya ganti nama%')
-            ->firstOrFail();
-        $nasabah = $pembayaran->customer;
+        $data = [
+            'perusahaan'      => 'GSOFT INDONESIA',
+            'alamat'          => 'JL. BANGKA 123 JEMBER 12345',
+            'telp'            => 'TELP. 0331-123456',
+            'tgl_angsuran'    => '28/01/2011',
+            'faktur_no'       => 'PJ20110119117',
+            'no_pelanggan'    => 'CST-METRO',
+            'terima_dari'     => 'METRO CELL',
+            'sejumlah_uang'   => '7.000.000',
+            'terbilang'       => 'Tujuh juta rupiah',
+            'items'           => [
+                ['no' => 1, 'keterangan' => 'Angsuran ke 1', 'jumlah' => '5.000.000'],
+                ['no' => 2, 'keterangan' => 'Angsuran ke 2', 'jumlah' => '2.000.000'],
+            ],
+            'total'           => '7.000.000',
+            'total_hutang'    => '9.031.250,00',
+            'total_angsuran'  => '7.000.000,00',
+            'sisa_hutang'     => '2.031.250,00',
+            'status'          => 'Belum Lunas',
+            'jatuh_tempo'     => '12/3/2011',
+            'tgl_cetak'       => '17 Februari 2011',
+        ];
 
-        // --- PERBAIKAN LOGIKA PENGAMBILAN KAVLING ---
+        $pdf = new TCPDF('L', 'mm', array(210, 148), true, 'UTF-8', false);
 
-        // Ambil lokasi dari relasi di customer
-        $lokasi = $nasabah->lokasiKavling;
+        $pdf->SetCreator('GSOFT INDONESIA');
+        $pdf->SetAuthor('GSOFT INDONESIA');
+        $pdf->SetTitle('Kwitansi ' . $data['faktur_no']);
 
-        // Gabungkan semua kode kavling menjadi satu string (Many-to-Many)
-        $kodeKavlingGabungan = $nasabah->kavling->pluck('kode_kavling')->implode(', ');
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
 
-        // Ambil kavling pertama untuk penentuan cluster/kode
-        $kavlingPertama = $nasabah->kavling->first();
+        $pdf->SetMargins(10, 10, 10, true);
+        $pdf->SetAutoPageBreak(false, 0);
 
-        // Total Tagihan (Piutang) tidak digunakan di kwitansi, tapi dipertahankan jika diperlukan
-        // $totalTagihan = Piutang::where('id_customer', $nasabah->id)->sum('nominal');
+        $pdf->AddPage();
 
-        $blokNomor = '-';
-        if ($lokasi && $kavlingPertama) {
-            if ($lokasi->is_cluster) {
-                // Menggunakan properti dari kavling pertama yang sudah dimuat
-                $blokNomor = ($kavlingPertama->cluster ?? '-') . '-' . ($kavlingPertama->no ?? '-');
-            } else {
-                // Jika bukan cluster, gunakan kode kavling gabungan
-                $blokNomor = $kodeKavlingGabungan;
-            }
-        } else {
-            // Fallback jika tidak ada kavling (gunakan kode gabungan yang mungkin '-')
-            $blokNomor = $kodeKavlingGabungan;
+        $pdf->SetFont('helvetica', '', 9);
+
+        $pdf->Rect(8, 8, 194, 132, 'D');
+
+        $pdf->SetXY(12, 12);
+        $pdf->SetFont('helvetica', 'B', 10);
+        $pdf->Cell(70, 5, $data['perusahaan'], 0, 1, 'L');
+
+        $pdf->SetX(12);
+        $pdf->SetFont('helvetica', '', 8);
+        $pdf->Cell(70, 4, $data['alamat'], 0, 1, 'L');
+
+        $pdf->SetX(12);
+        $pdf->Cell(70, 4, $data['telp'], 0, 1, 'L');
+
+        $pdf->SetXY(80, 12);
+        $pdf->SetFont('helvetica', 'B', 18);
+        $pdf->Cell(52, 12, 'KWITANSI', 0, 0, 'C');
+
+        $pdf->SetFont('helvetica', '', 8.5);
+
+        $xRight = 135;
+        $pdf->SetXY($xRight, 12);
+        $pdf->Cell(30, 5, 'Tgl Angsuran', 0, 0, 'L');
+        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['tgl_angsuran'], 0, 1, 'L');
+
+        $pdf->SetX($xRight);
+        $pdf->Cell(30, 5, 'Faktur No', 0, 0, 'L');
+        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['faktur_no'], 0, 1, 'L');
+
+        $pdf->SetX($xRight);
+        $pdf->Cell(30, 5, 'No Pelanggan', 0, 0, 'L');
+        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['no_pelanggan'], 0, 1, 'L');
+
+        $pdf->SetLineWidth(0.3);
+        $pdf->Line(10, 30, 202, 30);
+
+        $pdf->SetXY(12, 33);
+        $pdf->SetFont('helvetica', '', 8.5);
+
+        $pdf->Cell(32, 5, 'Telah terima dari', 0, 0, 'L');
+        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(40, 5, $data['terima_dari'], 0, 0, 'L');
+
+        $xTerbilang = 92;
+        $pdf->SetXY($xTerbilang, 31);
+        $pdf->SetLineStyle(['width' => 0.2, 'dash' => '2,1', 'color' => [0, 0, 0]]);
+        $pdf->RoundedRect($xTerbilang, 31, 110, 10, 3, '1111', 'D');
+        $pdf->SetLineStyle(['width' => 0.3, 'dash' => 0, 'color' => [0, 0, 0]]);
+
+        $pdf->SetXY($xTerbilang + 2, 34);
+        $pdf->SetFont('helvetica', 'I', 9);
+        $pdf->Cell(106, 5, $data['terbilang'], 0, 0, 'L');
+
+        $pdf->SetXY(12, 38);
+        $pdf->SetFont('helvetica', '', 8.5);
+        $pdf->Cell(32, 5, 'Sejumlah uang', 0, 0, 'L');
+        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(40, 5, $data['sejumlah_uang'], 0, 0, 'L');
+
+        $pdf->Line(10, 45, 202, 45);
+
+        $pdf->SetXY(12, 46);
+        $pdf->SetFont('helvetica', 'B', 8.5);
+        $pdf->Cell(14, 5, 'NO', 0, 0, 'L');
+        $pdf->Cell(140, 5, 'K E T E R A N G A N', 0, 0, 'L');
+        $pdf->Cell(36, 5, 'JUMLAH', 0, 0, 'R');
+
+        $pdf->Line(10, 52, 202, 52);
+
+        $pdf->SetFont('helvetica', '', 8.5);
+        $yItem = 53;
+
+        foreach ($data['items'] as $item) {
+            $pdf->SetXY(12, $yItem);
+            $pdf->Cell(14,  5, $item['no'], 0, 0, 'L');
+            $pdf->Cell(140, 5, $item['keterangan'], 0, 0, 'L');
+            $pdf->Cell(36,  5, $item['jumlah'], 0, 0, 'R');
+            $yItem += 6;
         }
 
-        $width = 210;
-        $height = 120;
-        $fpdf = new TCPDF('L', 'mm', [$width, $height]);
+        $pdf->Line(10, 110, 202, 110);
 
-        $fpdf->SetPrintHeader(false);
-        $fpdf->SetPrintFooter(false);
-        $fpdf->SetMargins(0, 0, 0);
-        $fpdf->SetAutoPageBreak(false, 0);
-        $fpdf->AddPage();
+        $pdf->SetXY(12, 112);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(154, 5, 'T O T A L :', 0, 0, 'R');
+        $pdf->Cell(36,  5, $data['total'], 0, 0, 'R');
 
-        $kopTipisPath = null;
+        $pdf->Line(10, 118, 202, 118);
 
-        $kopSurat = KonfigurasiMedia::where('jenis_data', 'kop surat')->first();
+        $pdf->SetFont('helvetica', '', 8.5);
 
-        if ($kopSurat && $kopSurat->nama_file) {
-            $path = public_path('config_media/' . $kopSurat->nama_file);
-            if (file_exists($path)) {
-                $kopTipisPath = $path;
-            }
-        }
+        $yFoot = 120;
+        $xL    = 12;
 
-        if ($kopTipisPath) {
-            $fpdf->Image($kopTipisPath, 0, 0, 210, 15);
-        }
+        $pdf->SetXY($xL, $yFoot);
+        $pdf->Cell(28, 5, 'Total Hutang', 0, 0, 'L');
+        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['total_hutang'], 0, 1, 'L');
 
+        $pdf->SetX($xL);
+        $pdf->Cell(28, 5, 'Total Angsuran', 0, 0, 'L');
+        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['total_angsuran'], 0, 1, 'L');
 
-        // --- 1. LOGIKA BACKGROUND (Tetap Cek Lokasi -> Default) ---
-        $backgroundPath = public_path('assets/img/bg_kwitansi.jpg'); // Default
+        $pdf->SetX($xL);
+        $pdf->Cell(28, 5, 'Sisa Hutang', 0, 0, 'L');
+        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['sisa_hutang'], 0, 1, 'L');
 
-        if ($lokasi && $lokasi->bg_kwitansi) {
-            $customBg = public_path('bg_kwitansi/' . $lokasi->bg_kwitansi);
-            if (file_exists($customBg)) {
-                $backgroundPath = $customBg;
-            }
-        }
+        $pdf->Ln(1);
 
-        if (file_exists($backgroundPath)) {
-            $fpdf->Image($backgroundPath, 0, 0, $width, $height, '', '', '', false, 300, '', false, false, 0);
-        }
+        $pdf->SetX($xL);
+        $pdf->Cell(28, 5, 'Status', 0, 0, 'L');
+        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['status'], 0, 1, 'L');
 
-        // --- 2. LOGIKA KOP SURAT (DARI KONFIGURASI MEDIA) ---
-        $kopSuratPath = null;
+        $pdf->SetX($xL);
+        $pdf->Cell(28, 5, 'Jatuh Tempo', 0, 0, 'L');
+        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(35, 5, $data['jatuh_tempo'], 0, 1, 'L');
 
-        $mediaKwitansi = KonfigurasiMedia::where('jenis_data', 'kop surat')->first();
+        $xPerh = 85;
+        $pdf->SetXY($xPerh, 120);
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->Cell(40, 5, 'Perhatian :', 0, 0, 'L');
 
-        if ($mediaKwitansi && $mediaKwitansi->nama_file) {
-            $cekPath = public_path('config_media/' . $mediaKwitansi->nama_file);
-            if (file_exists($cekPath)) {
-                $kopSuratPath = $cekPath;
-            }
-        }
-        if ($kopSuratPath) {
-            $fpdf->Image($kopSuratPath, 0, 0, 210);
-        }
+        $pdf->SetLineWidth(0.3);
+        $pdf->Rect($xPerh, 126, 60, 14, 'D');
 
-        // --- MULAI KONTEN TEKS ---
-        $fpdf->SetFont('helvetica', '', 10);
-        $fpdf->SetMargins(10, 0, 0);
+        $xR = 155;
+        $pdf->SetXY($xR, 120);
+        $pdf->SetFont('helvetica', '', 8.5);
+        $pdf->Cell(45, 5, $data['tgl_cetak'], 0, 0, 'R');
 
-        $fpdf->SetFont('Times', 'B', 10);
-        $fpdf->SetTextColor(0, 0, 0);
+        $pdf->SetXY($xR, 135);
+        $pdf->SetFont('helvetica', 'I', 9);
+        $pdf->Cell(45, 5, 'gsoft', 0, 0, 'R');
 
-        // Sesuaikan Ln ini dengan tinggi gambar Kop Surat Anda
-        $fpdf->Ln(29);
-        $fpdf->Cell(6, 0, '', 0, 0, 'L');
-
-        $fpdf->SetTextColor(255, 0, 0);
-        $fpdf->Cell(0, 18, $pembayaran->no_kwitansi ?? '-', 0, 1, 'L');
-
-        $fpdf->SetTextColor(0, 0, 0);
-
-        $fpdf->SetFont('Times', '', 12);
-        $fpdf->SetXY(5, 36);
-        $fpdf->Cell(55, 5, '', 0, 0, 'L');
-        $fpdf->Cell(90, 15, $nasabah->nama_lengkap ?? '-', 0, 1, 'L');
-
-        $fpdf->SetXY(5, 48);
-        $fpdf->Cell(55, 0, '', 0, 0, 'L');
-        $fpdf->Cell(90, 0, $this->terbilang($pembayaran->nominal) . ' Rupiah', 0, 1, 'L');
-
-        $fpdf->SetXY(5, 56);
-        $fpdf->Cell(55, 5, '', 0, 0, 'L');
-        $fpdf->Cell(90, 3, $pembayaran->kategori->kategori . ' Pembelian Tanah Kavling ' . ($lokasi->nama_kavling ?? '-'), 0, 1, 'L');
-
-        $fpdf->SetXY(5, 60);
-        $fpdf->Cell(55, 5, '', 0, 0, 'L');
-        // Menggunakan variabel $blokNomor yang sudah diperbaiki
-        $fpdf->Cell(90, 10, 'Lokasi Tanah Kavling: ' . $blokNomor, 0, 1, 'L');
-
-        $fpdf->SetFont('helvetica', 'B', 12);
-        $fpdf->Text(30, 80, number_format($pembayaran->nominal, 0, ',', '.') . ',-');
-
-        $fpdf->SetFont('helvetica', 'B', 10);
-        $fpdf->SetTextColor(0, 0, 0);
-
-        $metode = strtoupper($pembayaran->metode->jenis_bayar ?? '-');
-
-        $checkIcon = public_path('check-solid.png');
-        $checkSize = 5;
-
-        if (file_exists($checkIcon)) {
-            switch ($metode) {
-                case 'CASH':
-                    $fpdf->Image($checkIcon, 11.5, 88, $checkSize);
-                    break;
-                case 'TRANSFER':
-                    $fpdf->Image($checkIcon, 28, 88, $checkSize);
-                    break;
-                case 'CHEQUE':
-                    $fpdf->Image($checkIcon, 53, 88, $checkSize);
-                    break;
-                case 'BILYET GIRO':
-                    $fpdf->Image($checkIcon, 74, 88, $checkSize);
-                    break;
-            }
-        }
-
-        // Tanda Tangan
-        $fpdf->Ln(-15);
-        $fpdf->SetFont('helvetica', '', 9);
-        $fpdf->Cell(120, 0, '', 0, 0, 'C');
-        $fpdf->Cell(70, 40, ($lokasi->kota_penandatangan ?? '-') . ', ' . \Carbon\Carbon::parse($pembayaran->tanggal)->translatedFormat('d F Y'), 0, 1, 'C');
-
-        $fpdf->Ln(0);
-        $fpdf->SetFont('Times', 'U', 10);
-        $fpdf->Cell(120, 5, '', 0, 0, 'C');
-
-        // Nama Penandatangan (Admin/Direktur)
-        $fpdf->Cell(70, 10, $lokasi->nama_penandatangan ?? '-', 0, 1, 'C');
-
-        $fpdf->SetFont('helvetica', 'B', 10);
-        $fpdf->SetXY(14, 101);
-        $fpdf->Cell(0, 0, $lokasi->informasi_rek ?? '-', 0, 'L');
-
-        $fpdf->Output();
+        $filename = 'kwitansi_' . $data['faktur_no'] . '.pdf';
+        $pdf->Output($filename, 'I');
         exit;
     }
+
+    // public function cetak($id)
+    // {
+    //     $pembayaran = Pemasukan::with(['customer.kavling', 'customer.lokasiKavling', 'metode', 'kategori'])
+    //         ->where('id', $id)
+    //         ->where('keterangan', 'NOT LIKE', 'Biaya ganti nama%')
+    //         ->firstOrFail();
+    //     $nasabah = $pembayaran->customer;
+
+
+    //     $lokasi = $nasabah->lokasiKavling;
+
+    //     $kodeKavlingGabungan = $nasabah->kavling->pluck('kode_kavling')->implode(', ');
+
+    //     $kavlingPertama = $nasabah->kavling->first();
+
+
+    //     $blokNomor = '-';
+    //     if ($lokasi && $kavlingPertama) {
+    //         if ($lokasi->is_cluster) {
+    //             $blokNomor = ($kavlingPertama->cluster ?? '-') . '-' . ($kavlingPertama->no ?? '-');
+    //         } else {
+    //             $blokNomor = $kodeKavlingGabungan;
+    //         }
+    //     } else {
+    //         $blokNomor = $kodeKavlingGabungan;
+    //     }
+
+    //     $width = 210;
+    //     $height = 120;
+    //     $fpdf = new TCPDF('L', 'mm', [$width, $height]);
+
+    //     $fpdf->SetPrintHeader(false);
+    //     $fpdf->SetPrintFooter(false);
+    //     $fpdf->SetMargins(0, 0, 0);
+    //     $fpdf->SetAutoPageBreak(false, 0);
+    //     $fpdf->AddPage();
+
+    //     $kopTipisPath = null;
+
+    //     $kopSurat = KonfigurasiMedia::where('jenis_data', 'kop surat')->first();
+
+    //     if ($kopSurat && $kopSurat->nama_file) {
+    //         $path = public_path('config_media/' . $kopSurat->nama_file);
+    //         if (file_exists($path)) {
+    //             $kopTipisPath = $path;
+    //         }
+    //     }
+
+    //     if ($kopTipisPath) {
+    //         $fpdf->Image($kopTipisPath, 0, 0, 210, 15);
+    //     }
+
+
+    //     $backgroundPath = public_path('assets/img/bg_kwitansi.jpg');
+
+    //     if ($lokasi && $lokasi->bg_kwitansi) {
+    //         $customBg = public_path('bg_kwitansi/' . $lokasi->bg_kwitansi);
+    //         if (file_exists($customBg)) {
+    //             $backgroundPath = $customBg;
+    //         }
+    //     }
+
+    //     if (file_exists($backgroundPath)) {
+    //         $fpdf->Image($backgroundPath, 0, 0, $width, $height, '', '', '', false, 300, '', false, false, 0);
+    //     }
+
+    //     $kopSuratPath = null;
+
+    //     $mediaKwitansi = KonfigurasiMedia::where('jenis_data', 'kop surat')->first();
+
+    //     if ($mediaKwitansi && $mediaKwitansi->nama_file) {
+    //         $cekPath = public_path('config_media/' . $mediaKwitansi->nama_file);
+    //         if (file_exists($cekPath)) {
+    //             $kopSuratPath = $cekPath;
+    //         }
+    //     }
+    //     if ($kopSuratPath) {
+    //         $fpdf->Image($kopSuratPath, 0, 0, 210);
+    //     }
+
+    //     $fpdf->SetFont('helvetica', '', 10);
+    //     $fpdf->SetMargins(10, 0, 0);
+
+    //     $fpdf->SetFont('Times', 'B', 10);
+    //     $fpdf->SetTextColor(0, 0, 0);
+
+    //     $fpdf->Ln(29);
+    //     $fpdf->Cell(6, 0, '', 0, 0, 'L');
+
+    //     $fpdf->SetTextColor(255, 0, 0);
+    //     $fpdf->Cell(0, 18, $pembayaran->no_kwitansi ?? '-', 0, 1, 'L');
+
+    //     $fpdf->SetTextColor(0, 0, 0);
+
+    //     $fpdf->SetFont('Times', '', 12);
+    //     $fpdf->SetXY(5, 36);
+    //     $fpdf->Cell(55, 5, '', 0, 0, 'L');
+    //     $fpdf->Cell(90, 15, $nasabah->nama_lengkap ?? '-', 0, 1, 'L');
+
+    //     $fpdf->SetXY(5, 48);
+    //     $fpdf->Cell(55, 0, '', 0, 0, 'L');
+    //     $fpdf->Cell(90, 0, $this->terbilang($pembayaran->nominal) . ' Rupiah', 0, 1, 'L');
+
+    //     $fpdf->SetXY(5, 56);
+    //     $fpdf->Cell(55, 5, '', 0, 0, 'L');
+    //     $fpdf->Cell(90, 3, $pembayaran->kategori->kategori . ' Pembelian Tanah Kavling ' . ($lokasi->nama_kavling ?? '-'), 0, 1, 'L');
+
+    //     $fpdf->SetXY(5, 60);
+    //     $fpdf->Cell(55, 5, '', 0, 0, 'L');
+    //     $fpdf->Cell(90, 10, 'Lokasi Tanah Kavling: ' . $blokNomor, 0, 1, 'L');
+
+    //     $fpdf->SetFont('helvetica', 'B', 12);
+    //     $fpdf->Text(30, 80, number_format($pembayaran->nominal, 0, ',', '.') . ',-');
+
+    //     $fpdf->SetFont('helvetica', 'B', 10);
+    //     $fpdf->SetTextColor(0, 0, 0);
+
+    //     $metode = strtoupper($pembayaran->metode->jenis_bayar ?? '-');
+
+    //     $checkIcon = public_path('check-solid.png');
+    //     $checkSize = 5;
+
+    //     if (file_exists($checkIcon)) {
+    //         switch ($metode) {
+    //             case 'CASH':
+    //                 $fpdf->Image($checkIcon, 11.5, 88, $checkSize);
+    //                 break;
+    //             case 'TRANSFER':
+    //                 $fpdf->Image($checkIcon, 28, 88, $checkSize);
+    //                 break;
+    //             case 'CHEQUE':
+    //                 $fpdf->Image($checkIcon, 53, 88, $checkSize);
+    //                 break;
+    //             case 'BILYET GIRO':
+    //                 $fpdf->Image($checkIcon, 74, 88, $checkSize);
+    //                 break;
+    //         }
+    //     }
+
+    //     $fpdf->Ln(-15);
+    //     $fpdf->SetFont('helvetica', '', 9);
+    //     $fpdf->Cell(120, 0, '', 0, 0, 'C');
+    //     $fpdf->Cell(70, 40, ($lokasi->kota_penandatangan ?? '-') . ', ' . \Carbon\Carbon::parse($pembayaran->tanggal)->translatedFormat('d F Y'), 0, 1, 'C');
+
+    //     $fpdf->Ln(0);
+    //     $fpdf->SetFont('Times', 'U', 10);
+    //     $fpdf->Cell(120, 5, '', 0, 0, 'C');
+
+    //     $fpdf->Cell(70, 10, $lokasi->nama_penandatangan ?? '-', 0, 1, 'C');
+
+    //     $fpdf->SetFont('helvetica', 'B', 10);
+    //     $fpdf->SetXY(14, 101);
+    //     $fpdf->Cell(0, 0, $lokasi->informasi_rek ?? '-', 0, 'L');
+
+    //     $fpdf->Output();
+    //     exit;
+    // }
 
     private function terbilang($angka)
     {

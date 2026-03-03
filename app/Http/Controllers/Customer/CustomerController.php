@@ -19,9 +19,11 @@ use App\Models\PersyaratanLegal;
 use App\Models\Piutang;
 use App\Models\Tagihan;
 use App\Models\Transaksi;
+use App\Models\TransaksiKavling;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use PgSql\Lob;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -1009,28 +1011,10 @@ class CustomerController extends Controller
         try {
             $data = Customer::findOrFail($id);
 
-            ArsipCustomer::create([
-                'id_customer'       => $data->id,
-                'tgl_terima'        => $data->tgl_terima,
-                'id_progres'        => $data->id_status_progres,
-                'id_lokasi'         => $data->id_lokasi,
-                'id_kavling'        => $data->id_kavling,
-                'id_status_progres' => $data->id_status_progres,
-                'kode_customer'     => $data->kode_customer,
-                'nama_lengkap'      => $data->nama_lengkap,
-                'no_ktp'            => $data->no_ktp,
-                'no_ktp_p'          => $data->no_ktp_p,
-                'jenis_kelamin'     => $data->jenis_kelamin,
-                'tempat_lahir'      => $data->tempat_lahir,
-                'tgl_lahir'         => $data->tgl_lahir,
-                'alamat'            => $data->alamat,
-                'alamat_domisili'   => $data->alamat_domisili,
-                'no_telp'           => $data->no_telp,
-                'no_wa'             => $data->no_wa,
-                'pekerjaan'         => $data->pekerjaan,
-                'id_marketing'      => $data->id_marketing,
-                'ket_reject'        => $data->ket_reject,
-            ]);
+            Pemasukan::where('id_customer', $data->id)->delete();
+            Piutang::where('id_customer', $data->id)->delete();
+            PersyaratanLegal::where('id_customer', $data->id)->delete();
+            TransaksiKavling::where('id_customer', $data->id)->delete();
 
             $data->delete();
 
@@ -1042,6 +1026,7 @@ class CustomerController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Error deleting customer: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,

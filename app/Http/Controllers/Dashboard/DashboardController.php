@@ -9,6 +9,7 @@ use App\Models\LokasiKavling;
 use App\Models\Marketing;
 use App\Models\Pemasukan;
 use App\Models\ProgresUnitReady;
+use App\Models\TransaksiKavling;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ class DashboardController extends Controller
             ->translatedFormat('d F Y');
 
         $jumlahKavling = KavlingPeta::count();
-        $sudahLaku     = Customer::count();
+        $sudahLaku     = TransaksiKavling::count();
         $sisaLaku      = $jumlahKavling - $sudahLaku;
 
         $customers = Customer::with(['piutangs', 'pemasukans'])->orderBy('id', 'desc')->get();

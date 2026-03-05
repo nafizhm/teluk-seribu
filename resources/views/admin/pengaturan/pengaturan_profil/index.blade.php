@@ -60,10 +60,16 @@
                             </div>
                         </div>
 
-                         <div class="row mb-3 align-items-center">
+                        <div class="row mb-3 align-items-center">
                             <label for="pesan_jatuh_tempo" class="col-sm-3 col-form-label">Pesan Jatuh Tempo</label>
                             <div class="col-9">
-                                <textarea class="form-control" id="pesan_jatuh_tempo" name="pesan_jatuh_tempo" rows="3">{{ old('pesan_jatuh_tempo', $data->pesan_jatuh_tempo ?? '') }}</textarea>
+                                <textarea class="form-control" id="pesan_jatuh_tempo" name="pesan_jatuh_tempo" rows="5">{{ old('pesan_jatuh_tempo', $data->pesan_jatuh_tempo ?? '') }}</textarea>
+
+                                <small class="text-danger">
+                                    [[Nama Customer]] : Nama Customer Jatuh Tempo <br>
+                                    [[Jumlah Bulan]] : Jumlah Bulan Tunggakan <br>
+                                    [[Jumlah Tagihan]] : Total Nominal Tagihan
+                                </small>
                             </div>
                         </div>
                     </div>

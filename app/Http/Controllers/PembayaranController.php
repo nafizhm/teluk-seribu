@@ -1437,6 +1437,9 @@ class PembayaranController extends Controller
 
         $metodeBayar = MetodeBayar::all();
 
+        $config        = KonfigurasiAplikasi::first();
+        $templatePesan = $config->pesan_jatuh_tempo ?? 'Mohon Bayar Jatuh Tempo Kavling';
+
         if ($request->ajax()) {
 
             $query = Customer::with([
@@ -1486,6 +1489,7 @@ class PembayaranController extends Controller
             if ($request->filled('filter')) {
                 $data = $data->filter(function ($row) use ($customerData, $request) {
                     $keterlambatan = $customerData[$row->id]['keterlambatan'] ?? '';
+
                     switch ($request->filter) {
                         case 'telat':
                             return strpos($keterlambatan, 'Telat') !== false;
@@ -1514,6 +1518,7 @@ class PembayaranController extends Controller
                         ->translatedFormat('j F');
                 })
                 ->addColumn('lokasi', function ($row) use ($request) {
+
                     $kavling = $row->kavling;
 
                     if ($request->lokasi_id) {
@@ -1529,7 +1534,9 @@ class PembayaranController extends Controller
                     });
 
                     $output = '';
+
                     foreach ($grouped as $namaLokasi => $items) {
+
                         $output .= '<div class="mb-1"><strong class="text-primary">' . $namaLokasi . '</strong></div>';
 
                         $badges = $items->map(function ($item) {
@@ -1542,19 +1549,27 @@ class PembayaranController extends Controller
                     return $output;
                 })
                 ->editColumn('hrg_jual', function ($row) {
+
                     $totalHarga = $row->hrg_rumah ?? 0;
+
                     return 'Rp. ' . number_format($totalHarga, 0, ',', '.');
                 })
                 ->addColumn('pembayaran', function ($row) use ($customerData) {
+
                     $val = $customerData[$row->id]['pembayaran'] ?? 0;
+
                     return 'Rp. ' . number_format($val, 0, ',', '.');
                 })
                 ->addColumn('pencairan', function ($row) use ($customerData) {
+
                     $val = $customerData[$row->id]['pencairan'] ?? 0;
+
                     return 'Rp. ' . number_format($val, 0, ',', '.');
                 })
                 ->addColumn('sisa', function ($row) use ($customerData) {
+
                     $sisa = $customerData[$row->id]['sisa'] ?? 0;
+
                     if ($sisa <= 0) {
                         return '<span class="badge bg-success">Lunas</span>';
                     }
@@ -1562,43 +1577,63 @@ class PembayaranController extends Controller
                     return 'Rp. ' . number_format($sisa, 0, ',', '.');
                 })
                 ->addColumn('keterlambatan', function ($row) use ($customerData) {
+
                     $status = $customerData[$row->id]['keterlambatan'] ?? '-';
+
                     if (strpos($status, 'Telat') !== false) {
                         return '<span class="badge bg-danger">' . $status . '</span>';
                     }
+
                     if ($status == 'Lunas') {
                         return '<span class="badge bg-success">Lunas</span>';
                     }
 
                     return '<span class="badge bg-info">Lancar</span>';
                 })
-                ->addColumn('action', function ($row) use ($customerData) {
+                ->addColumn('action', function ($row) use ($customerData, $templatePesan) {
 
                     $detailUrl = route('pembayaran.detail', $row->id);
-                    $status    = $customerData[$row->id]['keterlambatan'] ?? '';
-                    $waButton  = '';
+
+                    $status = $customerData[$row->id]['keterlambatan'] ?? '';
+
+                    $waButton = '';
 
                     if (strpos($status, 'Telat') !== false && $row->no_wa) {
+
                         $noWa = preg_replace('/[^0-9]/', '', $row->no_wa);
+
                         if (substr($noWa, 0, 1) == '0') {
                             $noWa = '62' . substr($noWa, 1);
                         }
 
-                        $message = urlencode('Mohon Bayar Jatuh Tempo Kavling');
-                        $waUrl   = 'https://wa.me/' . $noWa . '?text=' . $message;
+                        $jumlahTagihan = $customerData[$row->id]['tagihan'] ?? 0;
+
+                        $pesan = $templatePesan;
+
+                        $pesan = str_replace('[[nama_customer]]', $row->nama_lengkap, $pesan);
+                        $pesan = str_replace('[[jumlah_bulan]]', $row->jumlah_bulan_x ?? 0, $pesan);
+                        $pesan = str_replace(
+                            '[[jumlah_tagihan]]',
+                            'Rp. ' . number_format($jumlahTagihan, 0, ',', '.'),
+                            $pesan
+                        );
+
+                        $message = urlencode($pesan);
+
+                        $waUrl = 'https://wa.me/' . $noWa . '?text=' . $message;
 
                         $waButton = '<a href="' . $waUrl . '" target="_blank" class="btn btn-success btn-sm me-1">
-                                    <i class="fab fa-whatsapp"></i>
-                                 </a>';
+                                <i class="fab fa-whatsapp"></i>
+                                </a>';
                     }
 
                     return '
-                    <div class="d-flex justify-content-center">
-                        ' . $waButton . '
-                        <button class="btn btn-info btn-sm edit-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalTempo">Edit</button>
-                        <button class="btn btn-primary btn-sm bayar-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalForm">Bayar</button>
-                        <a href="' . $detailUrl . '" class="btn btn-success btn-sm">Detail</a>
-                    </div>
+                <div class="d-flex justify-content-center">
+                    ' . $waButton . '
+                    <button class="btn btn-info btn-sm edit-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalTempo">Edit</button>
+                    <button class="btn btn-primary btn-sm bayar-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalForm">Bayar</button>
+                    <a href="' . $detailUrl . '" class="btn btn-success btn-sm">Detail</a>
+                </div>
                 ';
                 })
                 ->rawColumns(['action', 'sisa', 'lokasi', 'keterlambatan'])

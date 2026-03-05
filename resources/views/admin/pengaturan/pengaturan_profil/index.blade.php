@@ -66,9 +66,9 @@
                                 <textarea class="form-control" id="pesan_jatuh_tempo" name="pesan_jatuh_tempo" rows="5">{{ old('pesan_jatuh_tempo', $data->pesan_jatuh_tempo ?? '') }}</textarea>
 
                                 <small class="text-danger">
-                                    [[Nama Customer]] : Nama Customer Jatuh Tempo <br>
-                                    [[Jumlah Bulan]] : Jumlah Bulan Tunggakan <br>
-                                    [[Jumlah Tagihan]] : Total Nominal Tagihan
+                                    [[nama_customer]] : Nama Customer Jatuh Tempo <br>
+                                    [[jumlah_bulan]] : Jumlah Bulan Tunggakan <br>
+                                    [[jumlah_tagihan]] : Total Nominal Tagihan
                                 </small>
                             </div>
                         </div>

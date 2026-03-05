@@ -28,17 +28,18 @@
                         @endforeach
                     </ul>
 
-                    <table id="data-table" class="table table-sm table-bordered table-striped data-table">
+                    <table id="data-table" class="table small table-sm table-bordered table-striped data-table">
                         <thead>
                             <tr>
                                 <th rowspan="2" width="2%">No</th>
-                                <th colspan="3" class="text-center">Customer</th>
+                                <th colspan="4" class="text-center">Customer</th>
                                 <th colspan="2" class="text-center">Dana Masuk</th>
                                 <th rowspan="2" width="10%">Sisa Pembayaran</th>
                                 <th rowspan="2" width="10%">Keterlambatan</th>
                                 <th rowspan="2" width="10%" class="text-center">Action</th>
                             </tr>
                             <tr>
+                                <th width="12%">Jatuh Tempo</th>
                                 <th width="12%">Nama Customer</th>
                                 <th width="10%">Lokasi Unit</th>
                                 <th width="10%">Harga Tanah Kavling</th>
@@ -278,6 +279,12 @@
                         className: 'text-center'
                     },
                     {
+                        data: 'tgl_jatuh_tempo',
+                        name: 'tgl_jatuh_tempo',
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
                         data: 'customer',
                         name: 'customer',
                         orderable: true,
@@ -317,7 +324,8 @@
                         data: 'keterlambatan',
                         name: 'keterlambatan',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        className: 'text-center'
                     },
                     {
                         data: 'action',

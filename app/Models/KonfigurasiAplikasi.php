@@ -16,6 +16,7 @@ class KonfigurasiAplikasi extends Model
         'hape',
         'npwp_perusahaan',
         'front_page',
+        'pesan_jatuh_tempo',
     ];
 
     public $timestamps = false;

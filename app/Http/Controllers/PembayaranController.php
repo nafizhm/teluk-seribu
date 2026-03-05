@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Pengaturan\HakAksesController;
@@ -78,7 +77,7 @@ class PembayaranController extends Controller
                 ->addColumn('rincian_tagihan', function ($row) {
                     $html = '';
                     foreach ($row->piutangs as $i => $p) {
-                        $icon = $i == 0 ? '<i class="fa fa-home text-danger"></i> ' : '<i class="fa fa-plus-square text-danger"></i> ';
+                        $icon  = $i == 0 ? '<i class="fa fa-home text-danger"></i> ' : '<i class="fa fa-plus-square text-danger"></i> ';
                         $html .= $icon . e($p->deskripsi) . ' # <strong>Rp. ' . number_format($p->nominal, 0, ',', '.') . '</strong><br>';
                     }
                     $html .= '<hr>';
@@ -89,31 +88,31 @@ class PembayaranController extends Controller
                     return $html;
                 })
                 ->addColumn('status', function ($row) {
-                    $status = $row->progres ? $row->progres->status_progres : '';
+                    $status    = $row->progres ? $row->progres->status_progres : '';
                     $marketing = $row->marketing ? '<span class="badge badge-warning">' . $row->marketing->nama_marketing . '</span>' : '';
 
                     return '<div>' . e($status) . '<br>' . $marketing . '</div>';
                 })
                 ->addColumn('jumlah_tagihan', function ($row) {
                     $totalTagihan = $row->piutangs->sum('nominal');
-                    $totalBayar = $row->piutangs->sum('terbayar');
-                    $sisa = max($row->piutangs->sum('sisa_bayar'), 0);
+                    $totalBayar   = $row->piutangs->sum('terbayar');
+                    $sisa         = max($row->piutangs->sum('sisa_bayar'), 0);
 
                     if ($sisa == 0) {
                         return '<img src="' . asset('assets/img/lunas.jpg') . '" width="100px">';
                     }
 
-                    $html = '<span class="badge bg-warning text-dark">Tagihan : Rp. ' . number_format($totalTagihan, 0, ',', '.') . '</span><br>';
+                    $html  = '<span class="badge bg-warning text-dark">Tagihan : Rp. ' . number_format($totalTagihan, 0, ',', '.') . '</span><br>';
                     $html .= '<span class="badge bg-success">Sudah Bayar : Rp. ' . number_format($totalBayar, 0, ',', '.') . '</span><br>';
                     $html .= '<span class="badge bg-danger">Sisa Bayar : Rp. ' . number_format($sisa, 0, ',', '.') . '</span>';
 
                     return $html;
                 })
                 ->addColumn('action', function ($row) {
-                    $editUrl = route('pembayaran.show', $row->id);
-                    $btn = '<div class="d-flex justify-content-center">';
-                    $btn .= '<a class="btn btn-success btn-sm" href="' . e($editUrl) . '">Detail</a>';
-                    $btn .= '</div>';
+                    $editUrl  = route('pembayaran.show', $row->id);
+                    $btn      = '<div class="d-flex justify-content-center">';
+                    $btn     .= '<a class="btn btn-success btn-sm" href="' . e($editUrl) . '">Detail</a>';
+                    $btn     .= '</div>';
 
                     return $btn;
                 })
@@ -137,20 +136,20 @@ class PembayaranController extends Controller
 
         $kodeKavlingGabungan = $customer->kavling->pluck('kode_kavling')->implode(', ');
 
-        $totalTagihan = $totalHargaKavling;
+        $totalTagihan   = $totalHargaKavling;
         $kavlingPertama = $customer->kavling->first();
 
-        $konfigurasi = KonfigurasiAplikasi::select('nama_perusahaan', 'telp')->first();
+        $konfigurasi    = KonfigurasiAplikasi::select('nama_perusahaan', 'telp')->first();
         $namaPerusahaan = $konfigurasi->nama_perusahaan ?? 'PT. MULIA ASRI SENTOSA';
-        $telp = $konfigurasi->telp ?? '081250274777';
+        $telp           = $konfigurasi->telp ?? '081250274777';
 
         $pemasukanBersih = $customer->pemasukans->filter(function ($p) {
             return ! str_starts_with($p->keterangan, 'Biaya ganti nama');
         });
 
-        $lokasi = $customer->lokasiKavling;
+        $lokasi          = $customer->lokasiKavling;
         $pengaturanMedia = KonfigurasiMedia::where('jenis_data', 'kop surat')->first();
-        $logoPath = null;
+        $logoPath        = null;
 
         if ($pengaturanMedia && $pengaturanMedia->nama_file) {
             $logoPath = public_path('config_media/' . $pengaturanMedia->nama_file);
@@ -219,15 +218,15 @@ class PembayaranController extends Controller
         $pdf->Cell(31, 7, 'Sisa Pembayaran', 1, 1, 'C', true);
 
         $pdf->SetFont('Times', '', 9);
-        $no = 1;
+        $no   = 1;
         $sisa = $totalHargaKavling ?? 0;
 
         foreach ($pemasukanBersih->sortBy('id') as $byr) {
-            $sisa -= $byr->nominal;
-            $jumlahBayar = $byr->nominal;
+            $sisa        -= $byr->nominal;
+            $jumlahBayar  = $byr->nominal;
 
             $keterangan = explode('#', $byr->keterangan)[0] ?? '';
-            $fill = ($no % 2 == 0) ? [255, 243, 243] : [255, 255, 255];
+            $fill       = ($no % 2 == 0) ? [255, 243, 243] : [255, 255, 255];
             $pdf->SetFillColor(...$fill);
 
             $pdf->Cell(5, 7, '', 0, 0);
@@ -256,7 +255,7 @@ class PembayaranController extends Controller
         $pdf->Ln(20);
 
         $namaMengetahui = $lokasi->nama_penandatangan ?? '';
-        $namaAdmin = $lokasi->nama_admin ?? '';
+        $namaAdmin      = $lokasi->nama_admin ?? '';
         $pdf->Cell(60, 6, $namaMengetahui, 0, 0, 'C');
         $pdf->Cell(70, 6, '', 0, 0);
         $pdf->Cell(60, 6, $namaAdmin, 0, 1, 'C');
@@ -265,32 +264,32 @@ class PembayaranController extends Controller
         exit;
     }
 
-      public function cetak($id)
+    public function cetak($id)
     {
         $data = [
-            'perusahaan'      => 'GSOFT INDONESIA',
-            'alamat'          => 'JL. BANGKA 123 JEMBER 12345',
-            'telp'            => 'TELP. 0331-123456',
-            'tgl_angsuran'    => '28/01/2011',
-            'faktur_no'       => 'PJ20110119117',
-            'no_pelanggan'    => 'CST-METRO',
-            'terima_dari'     => 'METRO CELL',
-            'sejumlah_uang'   => '7.000.000',
-            'terbilang'       => 'Tujuh juta rupiah',
-            'items'           => [
+            'perusahaan'     => 'GSOFT INDONESIA',
+            'alamat'         => 'JL. BANGKA 123 JEMBER 12345',
+            'telp'           => 'TELP. 0331-123456',
+            'tgl_angsuran'   => '28/01/2011',
+            'faktur_no'      => 'PJ20110119117',
+            'no_pelanggan'   => 'CST-METRO',
+            'terima_dari'    => 'METRO CELL',
+            'sejumlah_uang'  => '7.000.000',
+            'terbilang'      => 'Tujuh juta rupiah',
+            'items'          => [
                 ['no' => 1, 'keterangan' => 'Angsuran ke 1', 'jumlah' => '5.000.000'],
                 ['no' => 2, 'keterangan' => 'Angsuran ke 2', 'jumlah' => '2.000.000'],
             ],
-            'total'           => '7.000.000',
-            'total_hutang'    => '9.031.250,00',
-            'total_angsuran'  => '7.000.000,00',
-            'sisa_hutang'     => '2.031.250,00',
-            'status'          => 'Belum Lunas',
-            'jatuh_tempo'     => '12/3/2011',
-            'tgl_cetak'       => '17 Februari 2011',
+            'total'          => '7.000.000',
+            'total_hutang'   => '9.031.250,00',
+            'total_angsuran' => '7.000.000,00',
+            'sisa_hutang'    => '2.031.250,00',
+            'status'         => 'Belum Lunas',
+            'jatuh_tempo'    => '12/3/2011',
+            'tgl_cetak'      => '17 Februari 2011',
         ];
 
-        $pdf = new TCPDF('L', 'mm', array(210, 148), true, 'UTF-8', false);
+        $pdf = new TCPDF('L', 'mm', [210, 148], true, 'UTF-8', false);
 
         $pdf->SetCreator('GSOFT INDONESIA');
         $pdf->SetAuthor('GSOFT INDONESIA');
@@ -328,17 +327,17 @@ class PembayaranController extends Controller
         $xRight = 135;
         $pdf->SetXY($xRight, 12);
         $pdf->Cell(30, 5, 'Tgl Angsuran', 0, 0, 'L');
-        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(3, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['tgl_angsuran'], 0, 1, 'L');
 
         $pdf->SetX($xRight);
         $pdf->Cell(30, 5, 'Faktur No', 0, 0, 'L');
-        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(3, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['faktur_no'], 0, 1, 'L');
 
         $pdf->SetX($xRight);
         $pdf->Cell(30, 5, 'No Pelanggan', 0, 0, 'L');
-        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(3, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['no_pelanggan'], 0, 1, 'L');
 
         $pdf->SetLineWidth(0.3);
@@ -348,7 +347,7 @@ class PembayaranController extends Controller
         $pdf->SetFont('helvetica', '', 8.5);
 
         $pdf->Cell(32, 5, 'Telah terima dari', 0, 0, 'L');
-        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(3, 5, ':', 0, 0, 'C');
         $pdf->Cell(40, 5, $data['terima_dari'], 0, 0, 'L');
 
         $xTerbilang = 92;
@@ -364,7 +363,7 @@ class PembayaranController extends Controller
         $pdf->SetXY(12, 38);
         $pdf->SetFont('helvetica', '', 8.5);
         $pdf->Cell(32, 5, 'Sejumlah uang', 0, 0, 'L');
-        $pdf->Cell(3,  5, ':', 0, 0, 'C');
+        $pdf->Cell(3, 5, ':', 0, 0, 'C');
         $pdf->Cell(40, 5, $data['sejumlah_uang'], 0, 0, 'L');
 
         $pdf->Line(10, 45, 202, 45);
@@ -382,9 +381,9 @@ class PembayaranController extends Controller
 
         foreach ($data['items'] as $item) {
             $pdf->SetXY(12, $yItem);
-            $pdf->Cell(14,  5, $item['no'], 0, 0, 'L');
+            $pdf->Cell(14, 5, $item['no'], 0, 0, 'L');
             $pdf->Cell(140, 5, $item['keterangan'], 0, 0, 'L');
-            $pdf->Cell(36,  5, $item['jumlah'], 0, 0, 'R');
+            $pdf->Cell(36, 5, $item['jumlah'], 0, 0, 'R');
             $yItem += 6;
         }
 
@@ -393,7 +392,7 @@ class PembayaranController extends Controller
         $pdf->SetXY(12, 112);
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(154, 5, 'T O T A L :', 0, 0, 'R');
-        $pdf->Cell(36,  5, $data['total'], 0, 0, 'R');
+        $pdf->Cell(36, 5, $data['total'], 0, 0, 'R');
 
         $pdf->Line(10, 118, 202, 118);
 
@@ -404,29 +403,29 @@ class PembayaranController extends Controller
 
         $pdf->SetXY($xL, $yFoot);
         $pdf->Cell(28, 5, 'Total Hutang', 0, 0, 'L');
-        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['total_hutang'], 0, 1, 'L');
 
         $pdf->SetX($xL);
         $pdf->Cell(28, 5, 'Total Angsuran', 0, 0, 'L');
-        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['total_angsuran'], 0, 1, 'L');
 
         $pdf->SetX($xL);
         $pdf->Cell(28, 5, 'Sisa Hutang', 0, 0, 'L');
-        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['sisa_hutang'], 0, 1, 'L');
 
         $pdf->Ln(1);
 
         $pdf->SetX($xL);
         $pdf->Cell(28, 5, 'Status', 0, 0, 'L');
-        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['status'], 0, 1, 'L');
 
         $pdf->SetX($xL);
         $pdf->Cell(28, 5, 'Jatuh Tempo', 0, 0, 'L');
-        $pdf->Cell(4,  5, ':', 0, 0, 'C');
+        $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['jatuh_tempo'], 0, 1, 'L');
 
         $xPerh = 85;
@@ -459,13 +458,11 @@ class PembayaranController extends Controller
     //         ->firstOrFail();
     //     $nasabah = $pembayaran->customer;
 
-
     //     $lokasi = $nasabah->lokasiKavling;
 
     //     $kodeKavlingGabungan = $nasabah->kavling->pluck('kode_kavling')->implode(', ');
 
     //     $kavlingPertama = $nasabah->kavling->first();
-
 
     //     $blokNomor = '-';
     //     if ($lokasi && $kavlingPertama) {
@@ -502,7 +499,6 @@ class PembayaranController extends Controller
     //     if ($kopTipisPath) {
     //         $fpdf->Image($kopTipisPath, 0, 0, 210, 15);
     //     }
-
 
     //     $backgroundPath = public_path('assets/img/bg_kwitansi.jpg');
 
@@ -612,7 +608,7 @@ class PembayaranController extends Controller
     private function terbilang($angka)
     {
         $angka = abs($angka);
-        $baca = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
+        $baca  = ['', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas'];
         $hasil = '';
 
         if ($angka < 12) {
@@ -647,7 +643,7 @@ class PembayaranController extends Controller
 
         $kodeKavlingGabungan = $customer->kavling->pluck('kode_kavling')->implode(', ');
 
-        $metodeBayar = MetodeBayar::all();
+        $metodeBayar                = MetodeBayar::all();
         $kategoriTransaksiPemasukan = KategoriTransaksi::where('jenis_kategori', 'PEMASUKAN')
             ->get();
 
@@ -674,9 +670,9 @@ class PembayaranController extends Controller
     public function detailTagihan(Request $request, $id)
     {
         if ($request->ajax()) {
-            $tagihanList = Piutang::where('id_customer', $id)->orderBy('id')->get();
+            $tagihanList  = Piutang::where('id_customer', $id)->orderBy('id')->get();
             $totalTagihan = $tagihanList->sum('nominal');
-            $firstId = $tagihanList->first() ? $tagihanList->first()->id : null;
+            $firstId      = $tagihanList->first() ? $tagihanList->first()->id : null;
 
             return DataTables::of($tagihanList)
                 ->addIndexColumn()
@@ -691,7 +687,7 @@ class PembayaranController extends Controller
 
                     if ($row->id == $firstId) {
                         return '<form class="formHargaRumah" data-id="' . $id . '">' .
-                            csrf_field() .
+                        csrf_field() .
                             '<button type="submit" class="btn btn-warning btn-sm ms-1 btn-update-harga">
                             <span class="swal-btn-text">Update</span>
                         </button>' .
@@ -711,14 +707,14 @@ class PembayaranController extends Controller
     {
         $rules = [
             'id_kategori' => 'required',
-            'deskripsi' => 'required',
-            'nominal' => 'required',
+            'deskripsi'   => 'required',
+            'nominal'     => 'required',
         ];
 
         $messages = [
             'id_kategori.required' => 'Kategori Transaksi wajib dipilih.',
-            'deskripsi.required' => 'Deskripsi tagihan wajib diisi.',
-            'nominal.required' => 'Nominal wajib diisi.',
+            'deskripsi.required'   => 'Deskripsi tagihan wajib diisi.',
+            'nominal.required'     => 'Nominal wajib diisi.',
         ];
 
         $request->validate($rules, $messages);
@@ -727,27 +723,27 @@ class PembayaranController extends Controller
         try {
             $cust = Customer::find($id);
             Piutang::create([
-                'id_customer' => $id,
-                'id_bank' => $cust->id_bank,
-                'tanggal_piutang' => Carbon::now(),
-                'deskripsi' => $request->deskripsi,
+                'id_customer'           => $id,
+                'id_bank'               => $cust->id_bank,
+                'tanggal_piutang'       => Carbon::now(),
+                'deskripsi'             => $request->deskripsi,
                 'id_kategori_transaksi' => $request->id_kategori,
-                'nominal' => (int) str_replace(['.', ','], '', $request->nominal),
-                'lampiran' => '',
-                'status' => 1,
-                'terbayar' => 0,
-                'sisa_bayar' => (int) str_replace(['.', ','], '', $request->nominal),
+                'nominal'               => (int) str_replace(['.', ','], '', $request->nominal),
+                'lampiran'              => '',
+                'status'                => 1,
+                'terbayar'              => 0,
+                'sisa_bayar'            => (int) str_replace(['.', ','], '', $request->nominal),
             ]);
 
             $totalTagihan = Piutang::where('id_customer', $id)->sum('nominal');
-            $sisaBayar = Piutang::where('id_customer', $id)->sum('sisa_bayar');
+            $sisaBayar    = Piutang::where('id_customer', $id)->sum('sisa_bayar');
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
+                'success'                 => true,
                 'total_tagihan_formatted' => number_format($totalTagihan, 0, ',', '.'),
-                'sisa_bayar_formatted' => number_format($sisaBayar, 0, ',', '.'),
+                'sisa_bayar_formatted'    => number_format($sisaBayar, 0, ',', '.'),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -755,7 +751,7 @@ class PembayaranController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menambahkan tagihan',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -790,11 +786,11 @@ class PembayaranController extends Controller
                 ], 404);
             }
 
-            $terbayarLama = $piutangUtama->terbayar ?? 0;
+            $terbayarLama  = $piutangUtama->terbayar ?? 0;
             $sisaBayarBaru = max(0, $totalHargaKavlingBaru - $terbayarLama);
 
             $piutangUtama->update([
-                'nominal' => $totalHargaKavlingBaru,
+                'nominal'    => $totalHargaKavlingBaru,
                 'sisa_bayar' => $sisaBayarBaru,
             ]);
 
@@ -805,15 +801,15 @@ class PembayaranController extends Controller
             }
 
             $totalTagihan = Piutang::where('id_customer', $id)->sum('nominal');
-            $sisaBayar = Piutang::where('id_customer', $id)->sum('sisa_bayar');
+            $sisaBayar    = Piutang::where('id_customer', $id)->sum('sisa_bayar');
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Harga rumah berhasil diupdate.',
+                'success'                 => true,
+                'message'                 => 'Harga rumah berhasil diupdate.',
                 'total_tagihan_formatted' => number_format($totalTagihan, 0, ',', '.'),
-                'sisa_bayar_formatted' => number_format($sisaBayar, 0, ',', '.'),
+                'sisa_bayar_formatted'    => number_format($sisaBayar, 0, ',', '.'),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -821,7 +817,7 @@ class PembayaranController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengupdate harga rumah.',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -830,7 +826,7 @@ class PembayaranController extends Controller
     {
         DB::beginTransaction();
         try {
-            $tagihan = Piutang::findOrFail($id);
+            $tagihan     = Piutang::findOrFail($id);
             $id_customer = $tagihan->id_customer;
             $tagihan->delete();
 
@@ -839,17 +835,17 @@ class PembayaranController extends Controller
                 ->delete();
 
             $totalTagihan = Piutang::where('id_customer', $id_customer)->sum('nominal');
-            $jumlahBayar = Piutang::where('id_customer', $id_customer)->sum('terbayar');
-            $sisaBayar = Piutang::where('id_customer', $id_customer)->sum('sisa_bayar');
+            $jumlahBayar  = Piutang::where('id_customer', $id_customer)->sum('terbayar');
+            $sisaBayar    = Piutang::where('id_customer', $id_customer)->sum('sisa_bayar');
 
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Tagihan berhasil dihapus.',
+                'success'                 => true,
+                'message'                 => 'Tagihan berhasil dihapus.',
                 'total_tagihan_formatted' => number_format($totalTagihan, 0, ',', '.'),
-                'jumlah_bayar_formatted' => number_format($jumlahBayar, 0, ',', '.'),
-                'sisa_bayar_formatted' => number_format($sisaBayar, 0, ',', '.'),
+                'jumlah_bayar_formatted'  => number_format($jumlahBayar, 0, ',', '.'),
+                'sisa_bayar_formatted'    => number_format($sisaBayar, 0, ',', '.'),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -857,7 +853,7 @@ class PembayaranController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus tagihan.',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -873,9 +869,9 @@ class PembayaranController extends Controller
                 ->get();
 
             foreach ($data as $item) {
-                $deleteUrl = route('pembayaran.delete-pemasukan', $item->id);
-                $item->tanggal = Carbon::parse($item->tanggal)->translatedFormat('d F Y');
-                $item->kategori = $item->kategori->kategori ?? '-';
+                $deleteUrl              = route('pembayaran.delete-pemasukan', $item->id);
+                $item->tanggal          = Carbon::parse($item->tanggal)->translatedFormat('d F Y');
+                $item->kategori         = $item->kategori->kategori ?? '-';
                 $item->jumlah_formatted = '
                     <div class="d-flex justify-content-between">
                         <span>Rp.</span>
@@ -883,8 +879,8 @@ class PembayaranController extends Controller
                     </div>';
 
                 $action = '<form action="' . e($deleteUrl) . '" method="POST" style="display:inline;">'
-                    . csrf_field()
-                    . method_field('DELETE')
+                . csrf_field()
+                . method_field('DELETE')
                     . '<button type="submit" class="delete-pemasukan btn btn-danger btn-sm">Hapus</button></form>';
 
                 if (! in_array($item->id_kategori_transaksi, [4])) {
@@ -913,26 +909,26 @@ class PembayaranController extends Controller
     public function tambahPemasukan(Request $request, $id)
     {
         $rules = [
-            'tanggal_pembayaran' => 'required|date',
+            'tanggal_pembayaran'    => 'required|date',
             'id_kategori_transaksi' => 'required',
-            'id_tagihan' => 'required_if:id_kategori_transaksi,17',
-            'nominal_bayar' => 'required',
+            'id_tagihan'            => 'required_if:id_kategori_transaksi,17',
+            'nominal_bayar'         => 'required',
             'keterangan_pembayaran' => 'required',
-            'id_metode' => 'nullable',
-            'file' => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:2048',
+            'id_metode'             => 'nullable',
+            'file'                  => 'nullable|file|mimes:jpeg,png,jpg,webp,pdf|max:2048',
         ];
 
         $messages = [
-            'tanggal_pembayaran.required' => 'Tanggal Pembayaran wajib diisi.',
-            'tanggal_pembayaran.date' => 'Format Tanggal Pembayaran tidak valid.',
+            'tanggal_pembayaran.required'    => 'Tanggal Pembayaran wajib diisi.',
+            'tanggal_pembayaran.date'        => 'Format Tanggal Pembayaran tidak valid.',
             'id_kategori_transaksi.required' => 'Kategori Transaksi wajib diisi.',
-            'id_tagihan.required_if' => 'Tagihan wajib dipilih.',
-            'nominal_bayar.required' => 'Nominal wajib diisi.',
+            'id_tagihan.required_if'         => 'Tagihan wajib dipilih.',
+            'nominal_bayar.required'         => 'Nominal wajib diisi.',
             'keterangan_pembayaran.required' => 'Keterangan wajib diisi.',
             // 'id_metode.required'             => 'Cara Bayar wajib dipilih.',
-            'file.file' => 'file harus berupa file.',
-            'file.mimes' => 'Format file harus jpeg, png, jpg, atau pdf.',
-            'file.max' => 'Ukuran file maksimal 2MB.',
+            'file.file'                      => 'file harus berupa file.',
+            'file.mimes'                     => 'Format file harus jpeg, png, jpg, atau pdf.',
+            'file.max'                       => 'Ukuran file maksimal 2MB.',
         ];
 
         $request->validate($rules, $messages);
@@ -942,7 +938,7 @@ class PembayaranController extends Controller
 
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-                $ext = $file->getClientOriginalExtension();
+                $ext  = $file->getClientOriginalExtension();
 
                 $filename = Str::random(25) . '.' . $ext;
                 $file->move(public_path('assets/keuangan/pemasukan/'), $filename);
@@ -959,8 +955,8 @@ class PembayaranController extends Controller
             $no_kwitansi = '';
 
             if ($jenis != 4) {
-                $tahun = Carbon::now()->format('Y');
-                $bulan = Carbon::now()->format('n');
+                $tahun       = Carbon::now()->format('Y');
+                $bulan       = Carbon::now()->format('n');
                 $bulanRomawi = $this->bulanRomawi($bulan);
 
                 $lokasiSingkat = LokasiKavling::where('id', $cust->id_lokasi)
@@ -975,7 +971,7 @@ class PembayaranController extends Controller
                 if ($lastKwitansi) {
 
                     $lastNumber = (int) substr($lastKwitansi->no_kwitansi, 0, 4);
-                    $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+                    $newNumber  = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
                 } else {
                     $newNumber = '0001';
                 }
@@ -984,16 +980,16 @@ class PembayaranController extends Controller
             }
 
             Pemasukan::create([
-                'tanggal' => $request->tanggal_pembayaran,
-                'id_customer' => $id,
-                'id_bank' => $cust->id_bank,
-                'id_piutang' => $request->id_tagihan ?? 0,
+                'tanggal'               => $request->tanggal_pembayaran,
+                'id_customer'           => $id,
+                'id_bank'               => $cust->id_bank,
+                'id_piutang'            => $request->id_tagihan ?? 0,
                 'id_kategori_transaksi' => $request->id_kategori_transaksi,
-                'no_kwitansi' => $no_kwitansi,
-                'nominal' => str_replace('.', '', $request->nominal_bayar),
-                'keterangan' => $request->keterangan_pembayaran,
-                'id_metode' => $request->id_metode ?? 2,
-                'lampiran' => $filename ?? '',
+                'no_kwitansi'           => $no_kwitansi,
+                'nominal'               => str_replace('.', '', $request->nominal_bayar),
+                'keterangan'            => $request->keterangan_pembayaran,
+                'id_metode'             => $request->id_metode ?? 2,
+                'lampiran'              => $filename ?? '',
             ]);
 
             $nominalBayar = (int) str_replace('.', '', $request->nominal_bayar);
@@ -1011,13 +1007,13 @@ class PembayaranController extends Controller
                     }
 
                     $newSisaBayar = $piutang->sisa_bayar - $nominalBayar;
-                    $updateData = [
-                        'terbayar' => $piutang->terbayar + $nominalBayar,
+                    $updateData   = [
+                        'terbayar'   => $piutang->terbayar + $nominalBayar,
                         'sisa_bayar' => $newSisaBayar,
                     ];
 
                     if ($newSisaBayar <= 0) {
-                        $updateData['status'] = 2;
+                        $updateData['status']        = 2;
                         $updateData['tgl_pelunasan'] = Carbon::now();
                     }
 
@@ -1037,13 +1033,13 @@ class PembayaranController extends Controller
                     }
 
                     $newSisaBayar = $piutang->sisa_bayar - $nominalBayar;
-                    $updateData = [
-                        'terbayar' => $piutang->terbayar + $nominalBayar,
+                    $updateData   = [
+                        'terbayar'   => $piutang->terbayar + $nominalBayar,
                         'sisa_bayar' => $newSisaBayar,
                     ];
 
                     if ($newSisaBayar <= 0) {
-                        $updateData['status'] = 2;
+                        $updateData['status']        = 2;
                         $updateData['tgl_pelunasan'] = Carbon::now();
                     }
 
@@ -1052,8 +1048,8 @@ class PembayaranController extends Controller
             }
 
             $totalTagihan = Piutang::where('id_customer', $id)->sum('nominal');
-            $terbayar = Piutang::where('id_customer', $id)->sum('terbayar');
-            $sisaBayar = Piutang::where('id_customer', $id)->sum('sisa_bayar');
+            $terbayar     = Piutang::where('id_customer', $id)->sum('terbayar');
+            $sisaBayar    = Piutang::where('id_customer', $id)->sum('sisa_bayar');
 
             // Automatic Status Update to Lunas (ID 22)
             if ($sisaBayar <= 0 && $totalTagihan > 0) {
@@ -1063,10 +1059,10 @@ class PembayaranController extends Controller
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'jumlah_bayar' => number_format($terbayar, 0, ',', '.'),
+                'success'       => true,
+                'jumlah_bayar'  => number_format($terbayar, 0, ',', '.'),
                 'total_tagihan' => number_format($totalTagihan, 0, ',', '.'),
-                'sisa_bayar' => number_format($sisaBayar, 0, ',', '.'),
+                'sisa_bayar'    => number_format($sisaBayar, 0, ',', '.'),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1075,7 +1071,7 @@ class PembayaranController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menambahkan pemasukan',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -1102,14 +1098,14 @@ class PembayaranController extends Controller
 
             if ($piutang) {
                 $newSisaBayar = $piutang->sisa_bayar + $pemasukan->nominal;
-                $newTerbayar = $piutang->terbayar - $pemasukan->nominal;
+                $newTerbayar  = $piutang->terbayar - $pemasukan->nominal;
 
                 $newStatus = $newSisaBayar <= 0 ? 2 : 1;
 
                 $updateData = [
-                    'terbayar' => $newTerbayar,
+                    'terbayar'   => $newTerbayar,
                     'sisa_bayar' => $newSisaBayar,
-                    'status' => $newStatus,
+                    'status'     => $newStatus,
                 ];
 
                 if ($newStatus == 1) {
@@ -1124,8 +1120,8 @@ class PembayaranController extends Controller
             $pemasukan->delete();
 
             $totalTagihan = Piutang::where('id_customer', $id_customer)->sum('nominal');
-            $terbayar = Piutang::where('id_customer', $id_customer)->sum('terbayar');
-            $sisaBayar = Piutang::where('id_customer', $id_customer)->sum('sisa_bayar');
+            $terbayar     = Piutang::where('id_customer', $id_customer)->sum('terbayar');
+            $sisaBayar    = Piutang::where('id_customer', $id_customer)->sum('sisa_bayar');
 
             // Automatic Status Revert from Lunas to Akad (ID 3)
             if ($sisaBayar > 0) {
@@ -1138,11 +1134,11 @@ class PembayaranController extends Controller
             DB::commit();
 
             return response()->json([
-                'success' => true,
-                'message' => 'Pemasukan berhasil dihapus.',
-                'jumlah_bayar' => number_format($terbayar, 0, ',', '.'),
+                'success'       => true,
+                'message'       => 'Pemasukan berhasil dihapus.',
+                'jumlah_bayar'  => number_format($terbayar, 0, ',', '.'),
                 'total_tagihan' => number_format($totalTagihan, 0, ',', '.'),
-                'sisa_bayar' => number_format($sisaBayar, 0, ',', '.'),
+                'sisa_bayar'    => number_format($sisaBayar, 0, ',', '.'),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1150,7 +1146,7 @@ class PembayaranController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menghapus pemasukan.',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -1160,17 +1156,17 @@ class PembayaranController extends Controller
         $pembayaran = Pemasukan::with(['customer', 'metode', 'kategori'])->where('id', $id)
             ->where('keterangan', 'NOT LIKE', 'Biaya ganti nama%')->firstOrFail();
         $nasabah = $pembayaran->customer;
-        $lokasi = LokasiKavling::find($nasabah->id_lokasi ?? null)->first();
+        $lokasi  = LokasiKavling::find($nasabah->id_lokasi ?? null)->first();
         $kavling = KavlingPeta::find($nasabah->id_kavling ?? null)->first();
 
-        $noKwitansi = $pembayaran->no_kwitansi ?? '-';
-        $nama = $nasabah->nama_lengkap ?? '-';
-        $alamat = $nasabah->alamat_ktp ?? $nasabah->alamat_domisili ?? '-';
-        $jumlah = $pembayaran->nominal ?? 0;
-        $terbilang = '#' . strtoupper($this->terbilang($jumlah)) . ' Rupiah#';
+        $noKwitansi  = $pembayaran->no_kwitansi ?? '-';
+        $nama        = $nasabah->nama_lengkap ?? '-';
+        $alamat      = $nasabah->alamat_ktp ?? $nasabah->alamat_domisili ?? '-';
+        $jumlah      = $pembayaran->nominal ?? 0;
+        $terbilang   = '#' . strtoupper($this->terbilang($jumlah)) . ' Rupiah#';
         $namaKavling = $lokasi->nama_kavling ?? '-';
-        $tipe = $kavling->tipe_bangunan ?? '-';
-        $blokNomor = '-';
+        $tipe        = $kavling->tipe_bangunan ?? '-';
+        $blokNomor   = '-';
         if ($lokasi) {
             if ($lokasi->is_cluster) {
                 $blokNomor = ($kavling->cluster ?? '-') . '-' . ($kavling->no ?? '-');
@@ -1178,12 +1174,12 @@ class PembayaranController extends Controller
                 $blokNomor = $kavling->kode_kavling ?? '-';
             }
         }
-        $rumahId = $kavling->id_rumah_sikumbang ?? '-';
-        $hargaJual = $kavling->hrg_jual ?? 0;
-        $kotaTtd = $lokasi->kota_penandatangan ?? '-';
-        $tanggal = $pembayaran->tanggal ? Carbon::parse($pembayaran->tanggal)->translatedFormat('d F Y') : '-';
+        $rumahId         = $kavling->id_rumah_sikumbang ?? '-';
+        $hargaJual       = $kavling->hrg_jual ?? 0;
+        $kotaTtd         = $lokasi->kota_penandatangan ?? '-';
+        $tanggal         = $pembayaran->tanggal ? Carbon::parse($pembayaran->tanggal)->translatedFormat('d F Y') : '-';
         $jenisPembayaran = $pembayaran->kategori->kategori ?? 'Cicilan Pribadi';
-        $metodeBayar = $pembayaran->metode->jenis_bayar ?? 'CASH';
+        $metodeBayar     = $pembayaran->metode->jenis_bayar ?? 'CASH';
 
         $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetTitle('Kwitansi');
@@ -1282,15 +1278,15 @@ class PembayaranController extends Controller
     private function bulanRomawi($bulan)
     {
         $romawi = [
-            1 => 'I',
-            2 => 'II',
-            3 => 'III',
-            4 => 'IV',
-            5 => 'V',
-            6 => 'VI',
-            7 => 'VII',
-            8 => 'VIII',
-            9 => 'IX',
+            1  => 'I',
+            2  => 'II',
+            3  => 'III',
+            4  => 'IV',
+            5  => 'V',
+            6  => 'VI',
+            7  => 'VII',
+            8  => 'VIII',
+            9  => 'IX',
             10 => 'X',
             11 => 'XI',
             12 => 'XII',
@@ -1302,7 +1298,7 @@ class PembayaranController extends Controller
     public function rekapPembayaran(Request $request)
     {
         $pembayaran = KategoriTransaksi::where('id', 4)->get();
-        $lokasi = LokasiKavling::orderBy('id', 'asc')->get();
+        $lokasi     = LokasiKavling::orderBy('id', 'asc')->get();
 
         if ($request->ajax()) {
             $data = KavlingPeta::with(['customer', 'lokasi'])
@@ -1386,7 +1382,7 @@ class PembayaranController extends Controller
                     }
 
                     $totalTagihan = Piutang::where('id_customer', $customerId)->sum('nominal');
-                    $jumlahBayar = Pemasukan::where('id_customer', $customerId)
+                    $jumlahBayar  = Pemasukan::where('id_customer', $customerId)
                         ->where('keterangan', 'NOT LIKE', 'Biaya ganti nama%')
                         ->sum('nominal');
 
@@ -1438,17 +1434,18 @@ class PembayaranController extends Controller
         $kategoriTransaksiPemasukan = KategoriTransaksi::where('jenis_kategori', 'PEMASUKAN')
             ->where('id', 3)
             ->get();
+
         $metodeBayar = MetodeBayar::all();
 
         if ($request->ajax()) {
+
             $query = Customer::with([
-                'kavling.lokasi', // Load kavling beserta lokasinya
+                'kavling.lokasi',
                 'pemasukans' => function ($q) {
                     $q->where('keterangan', 'NOT LIKE', '%GANTI NAMA%');
                 },
                 'piutangs',
-            ])
-                ->whereHas('kavling');
+            ])->whereHas('kavling');
 
             if ($request->lokasi_id) {
                 $query->whereHas('kavling', function ($q) use ($request) {
@@ -1458,37 +1455,34 @@ class PembayaranController extends Controller
 
             $data = $query->orderBy('nama_lengkap', 'asc')->get();
 
-            // 2. Pre-calculate Data Keuangan
             $customerData = [];
             foreach ($data as $cust) {
                 $totalTagihan = $cust->piutangs->sum('nominal');
-                $totalBayar = $cust->pemasukans->sum('nominal');
-                // ID 4 sesuaikan dengan ID kategori pencairan di DB Anda
-                $pencairan = $cust->pemasukans->where('id_kategori_transaksi', 4)->sum('nominal');
-                $sisa = $totalTagihan - $totalBayar;
+                $totalBayar   = $cust->pemasukans->sum('nominal');
+                $pencairan    = $cust->pemasukans->where('id_kategori_transaksi', 4)->sum('nominal');
+                $sisa         = $totalTagihan - $totalBayar;
 
-                // Status Keterlambatan
                 $statusKeterlambatan = 'Lancar';
+
                 if ($sisa <= 0 && $totalTagihan > 0) {
                     $statusKeterlambatan = 'Lunas';
                 } elseif ($cust->inhouse_jatuh_tempo) {
                     $jatuhTempo = Carbon::parse($cust->inhouse_jatuh_tempo)->startOfDay();
                     if (Carbon::now()->startOfDay()->gt($jatuhTempo) && $sisa > 0) {
-                        $diff = (int) $jatuhTempo->diffInDays(Carbon::now()->startOfDay());
+                        $diff                = (int) $jatuhTempo->diffInDays(Carbon::now()->startOfDay());
                         $statusKeterlambatan = "Telat: $diff Hari";
                     }
                 }
 
                 $customerData[$cust->id] = [
-                    'pembayaran' => $totalBayar,
-                    'tagihan' => $totalTagihan,
-                    'pencairan' => $pencairan,
-                    'sisa' => $sisa,
+                    'pembayaran'    => $totalBayar,
+                    'tagihan'       => $totalTagihan,
+                    'pencairan'     => $pencairan,
+                    'sisa'          => $sisa,
                     'keterlambatan' => $statusKeterlambatan,
                 ];
             }
 
-            // 3. Filter Data di Memory (Collection)
             if ($request->filled('filter')) {
                 $data = $data->filter(function ($row) use ($customerData, $request) {
                     $keterlambatan = $customerData[$row->id]['keterlambatan'] ?? '';
@@ -1510,8 +1504,17 @@ class PembayaranController extends Controller
                 ->addColumn('customer', function ($row) {
                     return $row->nama_lengkap ?? '-';
                 })
+                ->addColumn('tgl_jatuh_tempo', function ($row) {
+                    if (! $row->inhouse_jatuh_tempo) {
+                        return '-';
+                    }
+
+                    return Carbon::parse($row->inhouse_jatuh_tempo)
+                        ->locale('id')
+                        ->translatedFormat('j F');
+                })
                 ->addColumn('lokasi', function ($row) use ($request) {
-                    $kavling = $row->kavling; // Pastikan relasi kavlings sudah diload sebagai 'kavling' atau 'kavlings'
+                    $kavling = $row->kavling;
 
                     if ($request->lokasi_id) {
                         $kavling = $kavling->where('id_lokasi', $request->lokasi_id);
@@ -1521,20 +1524,17 @@ class PembayaranController extends Controller
                         return '-';
                     }
 
-                    // Group by Lokasi agar rapi
                     $grouped = $kavling->groupBy(function ($item) {
                         return $item->lokasi->nama_kavling ?? 'Lainnya';
                     });
 
                     $output = '';
                     foreach ($grouped as $namaLokasi => $items) {
-                        // Header Nama Lokasi
                         $output .= '<div class="mb-1"><strong class="text-primary">' . $namaLokasi . '</strong></div>';
 
-                        // Loop Kode Kavling jadi Badge
                         $badges = $items->map(function ($item) {
                             return '<span class="mb-1 badge bg-info me-1">' . $item->kode_kavling . '</span>';
-                        })->implode(' '); // Gabungkan dengan spasi
+                        })->implode(' ');
 
                         $output .= '<div class="mb-2">' . $badges . '</div>';
                     }
@@ -1543,17 +1543,14 @@ class PembayaranController extends Controller
                 })
                 ->editColumn('hrg_jual', function ($row) {
                     $totalHarga = $row->hrg_rumah ?? 0;
-
                     return 'Rp. ' . number_format($totalHarga, 0, ',', '.');
                 })
                 ->addColumn('pembayaran', function ($row) use ($customerData) {
                     $val = $customerData[$row->id]['pembayaran'] ?? 0;
-
                     return 'Rp. ' . number_format($val, 0, ',', '.');
                 })
                 ->addColumn('pencairan', function ($row) use ($customerData) {
                     $val = $customerData[$row->id]['pencairan'] ?? 0;
-
                     return 'Rp. ' . number_format($val, 0, ',', '.');
                 })
                 ->addColumn('sisa', function ($row) use ($customerData) {
@@ -1575,16 +1572,34 @@ class PembayaranController extends Controller
 
                     return '<span class="badge bg-info">Lancar</span>';
                 })
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use ($customerData) {
+
                     $detailUrl = route('pembayaran.detail', $row->id);
+                    $status    = $customerData[$row->id]['keterlambatan'] ?? '';
+                    $waButton  = '';
+
+                    if (strpos($status, 'Telat') !== false && $row->no_wa) {
+                        $noWa = preg_replace('/[^0-9]/', '', $row->no_wa);
+                        if (substr($noWa, 0, 1) == '0') {
+                            $noWa = '62' . substr($noWa, 1);
+                        }
+
+                        $message = urlencode('Mohon Bayar Jatuh Tempo Kavling');
+                        $waUrl   = 'https://wa.me/' . $noWa . '?text=' . $message;
+
+                        $waButton = '<a href="' . $waUrl . '" target="_blank" class="btn btn-success btn-sm me-1">
+                                    <i class="fab fa-whatsapp"></i>
+                                 </a>';
+                    }
 
                     return '
-                        <div class="d-flex justify-content-center">
-                            <button class="mx-1 btn btn-info btn-sm edit-button" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalTempo">Edit</button>
-                            <button class="mx-1 btn btn-primary btn-sm bayar-button" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalForm">Bayar</button>
-                            <a href="' . $detailUrl . '" class="btn btn-success btn-sm">Detail</a>
-                        </div>
-                    ';
+                    <div class="d-flex justify-content-center">
+                        ' . $waButton . '
+                        <button class="btn btn-info btn-sm edit-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalTempo">Edit</button>
+                        <button class="btn btn-primary btn-sm bayar-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalForm">Bayar</button>
+                        <a href="' . $detailUrl . '" class="btn btn-success btn-sm">Detail</a>
+                    </div>
+                ';
                 })
                 ->rawColumns(['action', 'sisa', 'lokasi', 'keterlambatan'])
                 ->make(true);
@@ -1609,12 +1624,12 @@ class PembayaranController extends Controller
             ]);
 
             $validator = Validator::make($request->all(), [
-                'inhouse_perbulan' => 'required',
-                'inhouse_tenor' => 'required',
+                'inhouse_perbulan'    => 'required',
+                'inhouse_tenor'       => 'required',
                 'inhouse_jatuh_tempo' => 'required|date',
             ], [
-                'inhouse_perbulan.required' => 'Inhouse perbulan harus diisi.',
-                'inhouse_tenor.required' => 'Inhouse tenor harus diisi.',
+                'inhouse_perbulan.required'    => 'Inhouse perbulan harus diisi.',
+                'inhouse_tenor.required'       => 'Inhouse tenor harus diisi.',
                 'inhouse_jatuh_tempo.required' => 'Inhouse jatuh tempo harus diisi.',
             ]);
 
@@ -1625,8 +1640,8 @@ class PembayaranController extends Controller
             }
 
             $customer->update([
-                'inhouse_perbulan' => $request->inhouse_perbulan,
-                'inhouse_tenor' => $request->inhouse_tenor,
+                'inhouse_perbulan'    => $request->inhouse_perbulan,
+                'inhouse_tenor'       => $request->inhouse_tenor,
                 'inhouse_jatuh_tempo' => $request->inhouse_jatuh_tempo,
             ]);
 
@@ -1643,7 +1658,7 @@ class PembayaranController extends Controller
     private function precalculateCustomerData($data)
     {
         $customerData = [];
-        $hariIni = Carbon::today();
+        $hariIni      = Carbon::today();
 
         foreach ($data as $row) {
             $customer = $row->customer;
@@ -1661,8 +1676,8 @@ class PembayaranController extends Controller
                 ->where('keterangan', '!=', 'GANTI NAMA');
 
             $jumlahBayar = $customer->pembayaran->where('keterangan', '!=', 'GANTI NAMA')->sum('jumlah');
-            $pembayaran = $pembayaranValid->sum('jumlah');
-            $pencairan = $customer->pembayaran->where('id_jenis_pembayaran', 3)
+            $pembayaran  = $pembayaranValid->sum('jumlah');
+            $pencairan   = $customer->pembayaran->where('id_jenis_pembayaran', 3)
                 ->where('keterangan', '!=', 'GANTI NAMA')
                 ->sum('jumlah');
             $sbum = $customer->pembayaran->where('id_jenis_pembayaran', 13)
@@ -1675,10 +1690,10 @@ class PembayaranController extends Controller
             $keterlambatan = $this->calculateKeterlambatan($customer, $sisaBayar, $hariIni);
 
             $customerData[$customerId] = [
-                'pembayaran' => $pembayaran,
-                'pencairan' => $pencairan,
-                'sbum' => $sbum,
-                'sisa' => $sisaBayar,
+                'pembayaran'    => $pembayaran,
+                'pencairan'     => $pencairan,
+                'sbum'          => $sbum,
+                'sisa'          => $sisaBayar,
                 'keterlambatan' => $keterlambatan,
             ];
         }
@@ -1732,7 +1747,7 @@ class PembayaranController extends Controller
         $totalPembayaran = $pembayaranList->sum('jumlah');
 
         $angsuranPerBulan = (float) $customer->inhouse_perbulan;
-        $tenor = (int) $customer->inhouse_tenor;
+        $tenor            = (int) $customer->inhouse_tenor;
 
         if ($tenor > 60) {
             $tenor = 60;
@@ -1743,10 +1758,10 @@ class PembayaranController extends Controller
         for ($i = 0; $i < $tenor; $i++) {
             $jadwalJatuhTempo[] = [
                 'bulan_ke' => $i + 1,
-                'tanggal' => $jatuhTempoAwal->copy()->addMonths($i)->startOfDay(),
-                'nominal' => $angsuranPerBulan,
+                'tanggal'  => $jatuhTempoAwal->copy()->addMonths($i)->startOfDay(),
+                'nominal'  => $angsuranPerBulan,
                 'terbayar' => 0,
-                'sisa' => $angsuranPerBulan,
+                'sisa'     => $angsuranPerBulan,
             ];
         }
 
@@ -1758,18 +1773,18 @@ class PembayaranController extends Controller
             }
 
             if ($sisaPembayaran >= $jadwal['nominal']) {
-                $jadwal['terbayar'] = $jadwal['nominal'];
-                $jadwal['sisa'] = 0;
-                $sisaPembayaran -= $jadwal['nominal'];
+                $jadwal['terbayar']  = $jadwal['nominal'];
+                $jadwal['sisa']      = 0;
+                $sisaPembayaran     -= $jadwal['nominal'];
             } else {
                 $jadwal['terbayar'] = $sisaPembayaran;
-                $jadwal['sisa'] = $jadwal['nominal'] - $sisaPembayaran;
-                $sisaPembayaran = 0;
+                $jadwal['sisa']     = $jadwal['nominal'] - $sisaPembayaran;
+                $sisaPembayaran     = 0;
             }
         }
 
         // Hitung keterlambatan
-        $jumlahTelat = 0;
+        $jumlahTelat       = 0;
         $totalNominalTelat = 0;
 
         foreach ($jadwalJatuhTempo as $jadwal) {

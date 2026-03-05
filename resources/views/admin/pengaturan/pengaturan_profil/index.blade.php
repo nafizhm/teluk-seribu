@@ -59,6 +59,13 @@
                                     value="{{ old('npwp_perusahaan', $data->npwp_perusahaan ?? '') }}">
                             </div>
                         </div>
+
+                         <div class="row mb-3 align-items-center">
+                            <label for="pesan_jatuh_tempo" class="col-sm-3 col-form-label">Pesan Jatuh Tempo</label>
+                            <div class="col-9">
+                                <textarea class="form-control" id="pesan_jatuh_tempo" name="pesan_jatuh_tempo" rows="3">{{ old('pesan_jatuh_tempo', $data->pesan_jatuh_tempo ?? '') }}</textarea>
+                            </div>
+                        </div>
                     </div>
                     @if (isset($permissions['edit']) && $permissions['edit'] == 1)
                         <div class="card-footer d-flex justify-content-end">

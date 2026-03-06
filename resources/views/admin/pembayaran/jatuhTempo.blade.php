@@ -7,7 +7,7 @@
                     <div class="d-flex align-content-center justify-content-between">
                         <h3 class="font-weight-bold text-xl">Data Jatuh Tempo</h3>
                         <div class="d-flex align-items-center">
-                            <select id="statusFilter" class="select-filter">
+                            <select id="statusFilter" class="select-filter form-select">
                                 <option value="">Semua Status</option>
                                 <option value="telat">Hanya Telat</option>
                                 <option value="lancar">Hanya Lancar</option>
@@ -33,7 +33,7 @@
                             <tr>
                                 <th rowspan="2" width="2%">No</th>
                                 <th colspan="4" class="text-center">Customer</th>
-                                <th colspan="2" class="text-center">Dana Masuk</th>
+                                <th colspan="1" class="text-center">Dana Masuk</th>
                                 <th rowspan="2" width="10%">Sisa Pembayaran</th>
                                 <th rowspan="2" width="10%">Keterlambatan</th>
                                 <th rowspan="2" width="10%" class="text-center">Action</th>
@@ -45,7 +45,6 @@
                                 <th width="10%">Harga Tanah Kavling</th>
 
                                 <th width="10%">Pembayaran</th>
-                                <th width="10%">Pencairan</th>
                             </tr>
                         </thead>
                     </table>
@@ -305,12 +304,6 @@
                     {
                         data: 'pembayaran',
                         name: 'pembayaran',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'pencairan',
-                        name: 'pencairan',
                         orderable: false,
                         searchable: false
                     },

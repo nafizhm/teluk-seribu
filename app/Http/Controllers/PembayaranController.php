@@ -1444,9 +1444,6 @@ class PembayaranController extends Controller
 
             $query = Customer::with([
                 'kavling.lokasi',
-                'pemasukans' => function ($q) {
-                    $q->where('keterangan', 'NOT LIKE', '%GANTI NAMA%');
-                },
                 'piutangs',
             ])->whereHas('kavling');
 
@@ -1461,8 +1458,8 @@ class PembayaranController extends Controller
             $customerData = [];
             foreach ($data as $cust) {
                 $totalTagihan = $cust->piutangs->sum('nominal');
-                $totalBayar   = $cust->pemasukans->sum('nominal');
-                $pencairan    = $cust->pemasukans->where('id_kategori_transaksi', 4)->sum('nominal');
+                $totalBayar   = $cust->piutangs->sum('terbayar'); // sudah dibayar
+                $pencairan    = $cust->piutangs->where('id_kategori_transaksi', 4)->sum('nominal');
                 $sisa         = $totalTagihan - $totalBayar;
 
                 $statusKeterlambatan = 'Lancar';
@@ -1548,46 +1545,29 @@ class PembayaranController extends Controller
 
                     return $output;
                 })
-                ->editColumn('hrg_jual', function ($row) {
-
-                    $totalHarga = $row->hrg_rumah ?? 0;
-
+                ->editColumn('hrg_jual', function ($row) use ($customerData) {
+                    $totalHarga = $customerData[$row->id]['tagihan'] ?? 0;
                     return 'Rp. ' . number_format($totalHarga, 0, ',', '.');
                 })
                 ->addColumn('pembayaran', function ($row) use ($customerData) {
-
                     $val = $customerData[$row->id]['pembayaran'] ?? 0;
-
-                    return 'Rp. ' . number_format($val, 0, ',', '.');
-                })
-                ->addColumn('pencairan', function ($row) use ($customerData) {
-
-                    $val = $customerData[$row->id]['pencairan'] ?? 0;
-
                     return 'Rp. ' . number_format($val, 0, ',', '.');
                 })
                 ->addColumn('sisa', function ($row) use ($customerData) {
-
                     $sisa = $customerData[$row->id]['sisa'] ?? 0;
-
                     if ($sisa <= 0) {
                         return '<span class="badge bg-success">Lunas</span>';
                     }
-
                     return 'Rp. ' . number_format($sisa, 0, ',', '.');
                 })
                 ->addColumn('keterlambatan', function ($row) use ($customerData) {
-
                     $status = $customerData[$row->id]['keterlambatan'] ?? '-';
-
                     if (strpos($status, 'Telat') !== false) {
                         return '<span class="badge bg-danger">' . $status . '</span>';
                     }
-
                     if ($status == 'Lunas') {
                         return '<span class="badge bg-success">Lunas</span>';
                     }
-
                     return '<span class="badge bg-info">Lancar</span>';
                 })
                 ->addColumn('action', function ($row) use ($customerData, $templatePesan) {
@@ -1623,18 +1603,18 @@ class PembayaranController extends Controller
                         $waUrl = 'https://wa.me/' . $noWa . '?text=' . $message;
 
                         $waButton = '<a href="' . $waUrl . '" target="_blank" class="btn btn-success btn-sm me-1">
-                                <i class="fab fa-whatsapp"></i>
-                                </a>';
+                            <i class="fab fa-whatsapp"></i>
+                            </a>';
                     }
 
                     return '
-                <div class="d-flex justify-content-center">
-                    ' . $waButton . '
-                    <button class="btn btn-info btn-sm edit-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalTempo">Edit</button>
-                    <button class="btn btn-primary btn-sm bayar-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalForm">Bayar</button>
-                    <a href="' . $detailUrl . '" class="btn btn-success btn-sm">Detail</a>
-                </div>
-                ';
+            <div class="d-flex justify-content-center">
+                ' . $waButton . '
+                <button class="btn btn-primary btn-sm edit-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalTempo">Edit</button>
+                <button class="btn btn-danger btn-sm bayar-button me-1" data-id="' . $row->id . '" data-bs-toggle="modal" data-bs-target="#modalForm">Bayar</button>
+                <a href="' . $detailUrl . '" class="btn btn-success btn-sm">Detail</a>
+            </div>
+            ';
                 })
                 ->rawColumns(['action', 'sisa', 'lokasi', 'keterlambatan'])
                 ->make(true);

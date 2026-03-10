@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Pengaturan\HakAksesController;
@@ -127,7 +128,7 @@ class PembayaranController extends Controller
 
     public function cetakRekap($id)
     {
-        $customer = Customer::with(['pemasukans', 'kavling.lokasi', 'lokasiKavling'])
+        $customer = Customer::with(['pemasukans', 'kavling.lokasi', 'lokasiKavling', 'piutangs'])
             ->findOrFail($id);
 
         $totalHargaKavling = $customer->kavling->sum(function ($kav) {
@@ -136,7 +137,7 @@ class PembayaranController extends Controller
 
         $kodeKavlingGabungan = $customer->kavling->pluck('kode_kavling')->implode(', ');
 
-        $totalTagihan   = $totalHargaKavling;
+        $totalTagihan   = $customer->piutangs->sum('nominal') ?? 0;
         $kavlingPertama = $customer->kavling->first();
 
         $konfigurasi    = KonfigurasiAplikasi::select('nama_perusahaan', 'telp')->first();
@@ -181,9 +182,9 @@ class PembayaranController extends Controller
         $pdf->Cell(3, 6, ':', 0, 0);
         $pdf->Cell(20, 6, $kodeKavlingGabungan, 0, 0);
         $pdf->Cell(5, 6, '', 0, 0);
-        $pdf->Cell(25, 6, 'Harga', 0, 0);
+        $pdf->Cell(25, 6, 'Total Tagihan', 0, 0);
         $pdf->Cell(3, 6, ':', 0, 0);
-        $pdf->Cell(30, 6, 'Rp ' . number_format($totalHargaKavling ?? 0, 0, ',', '.'), 0, 1);
+        $pdf->Cell(30, 6, 'Rp ' . number_format($totalTagihan ?? 0, 0, ',', '.'), 0, 1);
 
         $pdf->Cell(5, 6, '', 0, 0);
         $pdf->Cell(17, 6, 'No. KTP', 0, 0);
@@ -219,9 +220,9 @@ class PembayaranController extends Controller
 
         $pdf->SetFont('Times', '', 9);
         $no   = 1;
-        $sisa = $totalHargaKavling ?? 0;
+        $sisa = $totalTagihan ?? 0;
 
-        foreach ($pemasukanBersih->sortBy('id') as $byr) {
+        foreach ($pemasukanBersih->sortBy('tanggal')->values() as $index => $byr) {
             $sisa        -= $byr->nominal;
             $jumlahBayar  = $byr->nominal;
 
@@ -266,33 +267,54 @@ class PembayaranController extends Controller
 
     public function cetak($id)
     {
+        $pembayaran = Pemasukan::with(['customer.piutangs', 'customer.lokasiKavling', 'metode', 'kategori'])
+            ->findOrFail($id);
+
+        $customer = $pembayaran->customer;
+        $konfigurasi = KonfigurasiAplikasi::first();
+
+        $totalHutang = $customer->piutangs->sum('nominal') ?? 0;
+
+        // Calculate total payments made up to this specific payment
+        $totalAngsuran = Pemasukan::where('id_customer', $customer->id)
+            ->where('keterangan', 'NOT LIKE', 'Biaya ganti nama%')
+            ->where(function ($query) use ($pembayaran) {
+                $query->where('tanggal', '<', $pembayaran->tanggal)
+                    ->orWhere(function ($q) use ($pembayaran) {
+                        $q->where('tanggal', $pembayaran->tanggal)
+                            ->where('id', '<=', $pembayaran->id);
+                    });
+            })
+            ->sum('nominal');
+
+        $sisaHutang = max(0, $totalHutang - $totalAngsuran);
+
         $data = [
-            'perusahaan'     => 'GSOFT INDONESIA',
-            'alamat'         => 'JL. BANGKA 123 JEMBER 12345',
-            'telp'           => 'TELP. 0331-123456',
-            'tgl_angsuran'   => '28/01/2011',
-            'faktur_no'      => 'PJ20110119117',
-            'no_pelanggan'   => 'CST-METRO',
-            'terima_dari'    => 'METRO CELL',
-            'sejumlah_uang'  => '7.000.000',
-            'terbilang'      => 'Tujuh juta rupiah',
+            'perusahaan'     => $konfigurasi->nama_perusahaan ?? 'PT. MULIA ASRI SENTOSA',
+            'alamat'         => $konfigurasi->alamat ?? '-',
+            'telp'           => 'TELP. ' . ($konfigurasi->telp ?? '081250274777'),
+            'tgl_angsuran'   => Carbon::parse($pembayaran->tanggal)->format('d/m/Y'),
+            'faktur_no'      => $pembayaran->no_kwitansi ?? '-',
+            'no_pelanggan'   => 'CST-' . $customer->id,
+            'terima_dari'    => strtoupper($customer->nama_lengkap),
+            'sejumlah_uang'  => number_format($pembayaran->nominal, 0, ',', '.'),
+            'terbilang'      => $this->terbilang($pembayaran->nominal) . ' Rupiah',
             'items'          => [
-                ['no' => 1, 'keterangan' => 'Angsuran ke 1', 'jumlah' => '5.000.000'],
-                ['no' => 2, 'keterangan' => 'Angsuran ke 2', 'jumlah' => '2.000.000'],
+                ['no' => 1, 'keterangan' => $pembayaran->keterangan, 'jumlah' => number_format($pembayaran->nominal, 0, ',', '.')],
             ],
-            'total'          => '7.000.000',
-            'total_hutang'   => '9.031.250,00',
-            'total_angsuran' => '7.000.000,00',
-            'sisa_hutang'    => '2.031.250,00',
-            'status'         => 'Belum Lunas',
-            'jatuh_tempo'    => '12/3/2011',
-            'tgl_cetak'      => '17 Februari 2011',
+            'total'          => number_format($pembayaran->nominal, 0, ',', '.'),
+            'total_hutang'   => number_format($totalHutang, 0, ',', '.'),
+            'total_angsuran' => number_format($totalAngsuran, 0, ',', '.'),
+            'sisa_hutang'    => number_format($sisaHutang, 0, ',', '.'),
+            'status'         => ($sisaHutang <= 0) ? 'Lunas' : 'Belum Lunas',
+            'jatuh_tempo'    => '-',
+            'tgl_cetak'      => Carbon::now()->translatedFormat('d F Y'),
         ];
 
         $pdf = new TCPDF('L', 'mm', [210, 148], true, 'UTF-8', false);
 
-        $pdf->SetCreator('GSOFT INDONESIA');
-        $pdf->SetAuthor('GSOFT INDONESIA');
+        $pdf->SetCreator($data['perusahaan']);
+        $pdf->SetAuthor($data['perusahaan']);
         $pdf->SetTitle('Kwitansi ' . $data['faktur_no']);
 
         $pdf->setPrintHeader(false);
@@ -687,7 +709,7 @@ class PembayaranController extends Controller
 
                     if ($row->id == $firstId) {
                         return '<form class="formHargaRumah" data-id="' . $id . '">' .
-                        csrf_field() .
+                            csrf_field() .
                             '<button type="submit" class="btn btn-warning btn-sm ms-1 btn-update-harga">
                             <span class="swal-btn-text">Update</span>
                         </button>' .
@@ -879,8 +901,8 @@ class PembayaranController extends Controller
                     </div>';
 
                 $action = '<form action="' . e($deleteUrl) . '" method="POST" style="display:inline;">'
-                . csrf_field()
-                . method_field('DELETE')
+                    . csrf_field()
+                    . method_field('DELETE')
                     . '<button type="submit" class="delete-pemasukan btn btn-danger btn-sm">Hapus</button></form>';
 
                 if (! in_array($item->id_kategori_transaksi, [4])) {

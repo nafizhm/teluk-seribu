@@ -304,6 +304,30 @@
             background-color: #ffffff;
         }
 
+        #sidebar {
+            z-index: 100;
+            position: relative;
+        }
+
+        .notification-dropdown {
+            position: fixed !important;
+            top: 50px !important;
+            right: 40px;
+            min-width: 300px;
+            max-height: 350px;
+            overflow-y: auto;
+            transform: translateX(-50px) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Desktop */
+        @media (min-width: 992px) {
+            .notification-dropdown {
+                transform: translateX(-220px) !important;
+                max-height: 500px;
+            }
+        }
+
 
         #profileDropdown {
             display: flex;

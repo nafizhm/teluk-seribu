@@ -30,21 +30,19 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table data-table table-bordered table-striped w-100">
-                            <thead>
-                                <tr>
-                                    <th width="5%">No</th>
-                                    <th width="15%">Customer</th>
-                                    <th width="40%">Rincian Tagihan</th>
-                                    <th width="10%">Status</th>
-                                    <th width="18%">Jumlah Tagihan</th>
-                                    <th width="10%" class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
+                    <table class="table data-table small table-bordered table-striped w-100">
+                        <thead>
+                            <tr>
+                                <th width="5%">No</th>
+                                <th width="15%">Customer</th>
+                                <th width="40%">Rincian Tagihan</th>
+                                <th width="10%">Status</th>
+                                <th width="18%">Jumlah Tagihan</th>
+                                <th width="10%" class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </section>

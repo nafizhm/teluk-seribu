@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Pengaturan\HakAksesController;
@@ -60,14 +59,14 @@ class PembayaranController extends Controller
                 ->addColumn('customer', function ($row) {
                     $badge = '';
                     if ($row->jenis_pembelian == 'Pembelian Cash') {
-                        $badge = '<span class="badge badge-success">' . $row->jenis_pembelian . '</span>';
+                        $badge = '<span class="badge bg-success">' . $row->jenis_pembelian . '</span>';
                     } elseif ($row->jenis_pembelian == 'Cash Bertahap') {
-                        $badge = '<span class="badge badge-primary">' . $row->jenis_pembelian . '</span>';
+                        $badge = '<span class="badge bg-primary">' . $row->jenis_pembelian . '</span>';
                     } elseif ($row->jenis_pembelian == 'KPR') {
-                        $badge = '<span class="badge badge-danger">' . $row->jenis_pembelian . '</span>';
+                        $badge = '<span class="badge bg-danger">' . $row->jenis_pembelian . '</span>';
                     }
 
-                    return '<div><strong>' . e($row->nama_lengkap) . '</strong><br>' . e($row->no_telp) . '<br>' . $badge . '</div>';
+                    return '<div><strong>' . e($row->nama_lengkap) . '</strong><br><span class="text-primary">' . e($row->no_telp) . '</span><br>' . $badge . '</div>';
                 })
                 ->filterColumn('customer', function ($query, $keyword) {
                     $query->where(function ($q) use ($keyword) {
@@ -89,8 +88,8 @@ class PembayaranController extends Controller
                     return $html;
                 })
                 ->addColumn('status', function ($row) {
-                    $status    = $row->progres ? $row->progres->status_progres : '';
-                    $marketing = $row->marketing ? '<span class="badge badge-warning">' . $row->marketing->nama_marketing . '</span>' : '';
+                    $status    = $row->progres ? strtoupper($row->progres->status_progres) : '';
+                    $marketing = $row->marketing ? '<span class="badge bg-info">' . $row->marketing->nama_marketing . '</span>' : '';
 
                     return '<div>' . e($status) . '<br>' . $marketing . '</div>';
                 })
@@ -103,9 +102,9 @@ class PembayaranController extends Controller
                         return '<img src="' . asset('assets/img/lunas.jpg') . '" width="100px">';
                     }
 
-                    $html  = '<span class="badge bg-warning text-dark">Tagihan : Rp. ' . number_format($totalTagihan, 0, ',', '.') . '</span><br>';
-                    $html .= '<span class="badge bg-success">Sudah Bayar : Rp. ' . number_format($totalBayar, 0, ',', '.') . '</span><br>';
-                    $html .= '<span class="badge bg-danger">Sisa Bayar : Rp. ' . number_format($sisa, 0, ',', '.') . '</span>';
+                    $html  = '<span class="badge bg-warning text-dark d-block mb-1">Tagihan : Rp. ' . number_format($totalTagihan, 0, ',', '.') . '</span>';
+                    $html .= '<span class="badge bg-success d-block mb-1">Sudah Bayar : Rp. ' . number_format($totalBayar, 0, ',', '.') . '</span>';
+                    $html .= '<span class="badge bg-danger d-block">Sisa Bayar : Rp. ' . number_format($sisa, 0, ',', '.') . '</span>';
 
                     return $html;
                 })
@@ -270,7 +269,7 @@ class PembayaranController extends Controller
         $pembayaran = Pemasukan::with(['customer.piutangs', 'customer.lokasiKavling', 'metode', 'kategori'])
             ->findOrFail($id);
 
-        $customer = $pembayaran->customer;
+        $customer    = $pembayaran->customer;
         $konfigurasi = KonfigurasiAplikasi::first();
 
         $totalHutang = $customer->piutangs->sum('nominal') ?? 0;
@@ -335,14 +334,19 @@ class PembayaranController extends Controller
 
         $pdf->SetX(12);
         $pdf->SetFont('helvetica', '', 8);
-        $pdf->Cell(70, 4, $data['alamat'], 0, 1, 'L');
+
+// WRAP ALAMAT
+        $alamat  = $data['alamat'];
+        $maxChar = 87;
+        $lines   = str_split($alamat, $maxChar);
+
+        foreach ($lines as $line) {
+            $pdf->SetX(12);
+            $pdf->Cell(70, 4, trim($line), 0, 1, 'L');
+        }
 
         $pdf->SetX(12);
         $pdf->Cell(70, 4, $data['telp'], 0, 1, 'L');
-
-        $pdf->SetXY(80, 12);
-        $pdf->SetFont('helvetica', 'B', 18);
-        $pdf->Cell(52, 12, 'KWITANSI', 0, 0, 'C');
 
         $pdf->SetFont('helvetica', '', 8.5);
 
@@ -372,10 +376,10 @@ class PembayaranController extends Controller
         $pdf->Cell(3, 5, ':', 0, 0, 'C');
         $pdf->Cell(40, 5, $data['terima_dari'], 0, 0, 'L');
 
-        $xTerbilang = 92;
+        $xTerbilang = 120;
         $pdf->SetXY($xTerbilang, 31);
         $pdf->SetLineStyle(['width' => 0.2, 'dash' => '2,1', 'color' => [0, 0, 0]]);
-        $pdf->RoundedRect($xTerbilang, 31, 110, 10, 3, '1111', 'D');
+        $pdf->RoundedRect($xTerbilang, 31, 80, 10, 3, '1111', 'D');
         $pdf->SetLineStyle(['width' => 0.3, 'dash' => 0, 'color' => [0, 0, 0]]);
 
         $pdf->SetXY($xTerbilang + 2, 34);
@@ -409,61 +413,71 @@ class PembayaranController extends Controller
             $yItem += 6;
         }
 
-        $pdf->Line(10, 110, 202, 110);
+        $y = 95;
 
-        $pdf->SetXY(12, 112);
+        $pdf->Line(10, $y - 2, 202, $y - 2);
+
+        $pdf->SetXY(12, $y);
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(154, 5, 'T O T A L :', 0, 0, 'R');
         $pdf->Cell(36, 5, $data['total'], 0, 0, 'R');
 
-        $pdf->Line(10, 118, 202, 118);
+        $y += 6;
+        $pdf->Line(10, $y, 202, $y);
+
+        $y += 2;
 
         $pdf->SetFont('helvetica', '', 8.5);
 
-        $yFoot = 120;
-        $xL    = 12;
+        $xL  = 12;
 
-        $pdf->SetXY($xL, $yFoot);
+        $pdf->SetXY($xL, $y);
         $pdf->Cell(28, 5, 'Total Hutang', 0, 0, 'L');
         $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['total_hutang'], 0, 1, 'L');
 
-        $pdf->SetX($xL);
+        $y += 5;
+
+        $pdf->SetXY($xL, $y);
         $pdf->Cell(28, 5, 'Total Angsuran', 0, 0, 'L');
         $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['total_angsuran'], 0, 1, 'L');
 
-        $pdf->SetX($xL);
+        $y += 5;
+
+        $pdf->SetXY($xL, $y);
         $pdf->Cell(28, 5, 'Sisa Hutang', 0, 0, 'L');
         $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['sisa_hutang'], 0, 1, 'L');
 
-        $pdf->Ln(1);
+        $y += 6;
 
-        $pdf->SetX($xL);
+        $pdf->SetXY($xL, $y);
         $pdf->Cell(28, 5, 'Status', 0, 0, 'L');
         $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['status'], 0, 1, 'L');
 
-        $pdf->SetX($xL);
+        $y += 5;
+
+        $pdf->SetXY($xL, $y);
         $pdf->Cell(28, 5, 'Jatuh Tempo', 0, 0, 'L');
         $pdf->Cell(4, 5, ':', 0, 0, 'C');
         $pdf->Cell(35, 5, $data['jatuh_tempo'], 0, 1, 'L');
 
         $xPerh = 85;
-        $pdf->SetXY($xPerh, 120);
+        $pdf->SetXY($xPerh, $y - 10);
         $pdf->SetFont('helvetica', 'B', 9);
         $pdf->Cell(40, 5, 'Perhatian :', 0, 0, 'L');
 
         $pdf->SetLineWidth(0.3);
-        $pdf->Rect($xPerh, 126, 60, 14, 'D');
+        $pdf->Rect($xPerh, $y - 4, 60, 14, 'D');
 
         $xR = 155;
-        $pdf->SetXY($xR, 120);
+        $pdf->SetXY($xR, $y - 10);
         $pdf->SetFont('helvetica', '', 8.5);
         $pdf->Cell(45, 5, $data['tgl_cetak'], 0, 0, 'R');
 
-        $pdf->SetXY($xR, 135);
+        $pdf->SetXY($xR, $y + 5);
         $pdf->SetFont('helvetica', 'I', 9);
         $pdf->Cell(45, 5, 'gsoft', 0, 0, 'R');
 
@@ -709,7 +723,7 @@ class PembayaranController extends Controller
 
                     if ($row->id == $firstId) {
                         return '<form class="formHargaRumah" data-id="' . $id . '">' .
-                            csrf_field() .
+                        csrf_field() .
                             '<button type="submit" class="btn btn-warning btn-sm ms-1 btn-update-harga">
                             <span class="swal-btn-text">Update</span>
                         </button>' .
@@ -901,8 +915,8 @@ class PembayaranController extends Controller
                     </div>';
 
                 $action = '<form action="' . e($deleteUrl) . '" method="POST" style="display:inline;">'
-                    . csrf_field()
-                    . method_field('DELETE')
+                . csrf_field()
+                . method_field('DELETE')
                     . '<button type="submit" class="delete-pemasukan btn btn-danger btn-sm">Hapus</button></form>';
 
                 if (! in_array($item->id_kategori_transaksi, [4])) {

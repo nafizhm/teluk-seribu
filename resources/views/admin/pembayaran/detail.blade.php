@@ -148,7 +148,7 @@
                                         <th>Tanggal</th>
                                         <th>Jenis Pembayaran</th>
                                         <th>Jenis</th>
-                                        <th>Nominal</th>
+                                        <th width="150px">Nominal</th>
                                         <th width="150px">Action</th>
                                     </tr>
                                 </thead>
@@ -167,22 +167,22 @@
         </section>
     </div>
 
-    <div class="modal fade text-left" id="modalTagihan" tabindex="-1" role="dialog" aria-labelledby="modalTagihanLabel"
-        aria-hidden="true" data-backdrop="static" data-keyboard="false" data-focus="false">
+    <div class="modal fade text-left" id="modalTagihan" tabindex="-1" role="dialog" aria-labelledby="modalFormLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-focus="false">
 
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title white" id="myModalLabel160">Tambah Tagihan
+                    <h5 class="modal-title white" id="myModalLabel160">Form Tambah Tagihan
                     </h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close white" data-bs-dismiss="modal" aria-label="Close">
                         <i data-feather="x"></i>
                     </button>
                 </div>
-                <form id="formTagihan">
-                    @csrf
-                    <input type="hidden" id="primary_id" name="primary_id" value="{{ $customer->id }}">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form id="formTagihan">
+                        @csrf
+                        <input type="hidden" id="primary_id" name="primary_id" value="{{ $customer->id }}">
                         <div class="row mb-3">
                             <label class="control-label col-sm-4">Kategori Transaksi</label>
                             <div class="col-sm-8">
@@ -215,37 +215,37 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary ms-1" id="submitBtnTagihan">
-                            <span class="spinner-border spinner-border-sm mx-1 d-none" role="status"
-                                aria-hidden="true"></span>
-                            <span class="button-text">Simpan</span>
-                        </button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary ms-1" id="submitBtnTagihan">
+                        <span class="spinner-border spinner-border-sm mx-1 d-none" role="status"
+                            aria-hidden="true"></span>
+                        <span class="button-text">Simpan</span>
+                    </button>
+                </div>
                 </form>
             </div>
         </div>
     </div>
 
     <div class="modal fade text-left" id="modalPemasukan" tabindex="-1" role="dialog"
-        aria-labelledby="modalPemasukanLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false"
+        aria-labelledby="modalFormLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
         data-focus="false">
 
-        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary">
-                    <h5 class="modal-title white" id="myModalLabel160">Tambah Pemasukan
+                    <h5 class="modal-title white" id="myModalLabel160">Form Tambah Pemasukan
                     </h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close white" data-bs-dismiss="modal" aria-label="Close">
                         <i data-feather="x"></i>
                     </button>
                 </div>
-                <form id="formPemasukan">
-                    @csrf
-                    <input type="hidden" id="primary_id" name="primary_id" value="{{ $customer->id }}">
-                    <div class="modal-body">
+                <div class="modal-body">
+                    <form id="formPemasukan">
+                        @csrf
+                        <input type="hidden" id="primary_id" name="primary_id" value="{{ $customer->id }}">
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label">Tanggal Pembayaran</label>
                             <div class="col-sm-4">
@@ -276,7 +276,7 @@
 
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label">Kategori Transaksi</label>
-                            <div class="col-sm-3">
+                            <div class="col-sm-5">
                                 <select name="id_kategori_transaksi" id="id_kategori_transaksi"
                                     class="form-control select-kategori-transaksi-pemasukan">
                                     <option value=""></option>
@@ -287,7 +287,7 @@
                             </div>
 
                             <label class="col-sm-2 col-form-label label-tagihan d-none">Tagihan</label>
-                            <div class="col-sm-3 div-tagihan d-none">
+                            <div class="col-sm-2 div-tagihan d-none">
                                 <select name="id_tagihan" id="id_tagihan" class="form-control select-tagihan">
                                     <option value=""></option>
                                     @foreach ($piutang as $data)
@@ -300,7 +300,7 @@
 
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label">Cara Bayar</label>
-                            <div class="col-sm-4">
+                            <div class="col-sm-5">
                                 <select name="id_metode" id="id_metode" class="form-control select-cara-bayar">
                                     <option value=""></option>
                                     @foreach ($metodeBayar as $bayar)
@@ -312,7 +312,7 @@
 
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label">Nominal</label>
-                            <div class="col-sm-4">
+                            <div class="col-sm-5">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">Rp.</span>
@@ -348,15 +348,15 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary ms-1" id="submitBtnPemasukan">
-                            <span class="spinner-border spinner-border-sm mx-1 d-none" role="status"
-                                aria-hidden="true"></span>
-                            <span class="button-text">Simpan</span>
-                        </button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary ms-1" id="submitBtnPemasukan">
+                        <span class="spinner-border spinner-border-sm mx-1 d-none" role="status"
+                            aria-hidden="true"></span>
+                        <span class="button-text">Simpan</span>
+                    </button>
+                </div>
                 </form>
             </div>
         </div>
@@ -390,25 +390,25 @@
             $('.select-kategori-transaksi-tagihan').select2({
                 dropdownParent: $('#modalTagihan'),
                 width: '100%',
-                placeholder: 'Pilih Kategori Transaksi',
+                placeholder: 'Pilih',
             });
 
             $('.select-kategori-transaksi-pemasukan').select2({
                 dropdownParent: $('#modalPemasukan'),
                 width: '100%',
-                placeholder: 'Pilih Kategori Transaksi',
+                placeholder: 'Pilih',
             });
 
             $('.select-tagihan').select2({
                 dropdownParent: $('#modalPemasukan'),
                 width: '100%',
-                placeholder: 'Pilih Tagihan',
+                placeholder: 'Pilih',
             });
 
             $('.select-cara-bayar').select2({
                 dropdownParent: $('#modalPemasukan'),
                 width: '100%',
-                placeholder: 'Pilih Cara Pembayaran',
+                placeholder: 'Pilih',
             });
 
             $('#id_kategori_transaksi').on('change', function() {
@@ -515,8 +515,8 @@
                             positionClass: "toast-bottom-right",
                         });
 
-                        $('#total_tagihan_all').val(response.total_tagihan_formatted);
-                        $('#sisa_bayar_all').val(response.sisa_bayar_formatted);
+                        $('#total_tagihan_all').val('Rp. ' + response.total_tagihan_formatted);
+                        $('#sisa_bayar_all').val('Rp. ' + response.sisa_bayar_formatted);
 
                         $('.table-tagihan').DataTable().ajax.reload();
                     }
@@ -596,51 +596,49 @@
                             contentType: false,
                             processData: false,
                             success: function(response) {
-                                if (response.success) {
-                                    audio.play();
-                                    toastr.success(response.message ||
-                                        "Harga Rumah berhasil di update!",
-                                        "BERHASIL", {
-                                            progressBar: true,
-                                            timeOut: 3500,
-                                            positionClass: "toast-bottom-right",
-                                        });
+                                audio.play();
+                                toastr.success("Harga Rumah berhasil di update!",
+                                    "BERHASIL", {
+                                        progressBar: true,
+                                        timeOut: 3500,
+                                        positionClass: "toast-bottom-right",
+                                    });
 
-                                    $('#total_tagihan_all').val(response
-                                        .total_tagihan_formatted);
-                                    $('#sisa_bayar_all').val(response
-                                        .sisa_bayar_formatted);
-                                    $('.table-tagihan').DataTable().ajax.reload(
-                                        null,
-                                        false);
+                                $('#total_tagihan_all').val(response
+                                    .total_tagihan_formatted);
+                                $('#sisa_bayar_all').val(response
+                                    .sisa_bayar_formatted);
+                                $('.table-tagihan').DataTable().ajax.reload(null,
+                                    false);
 
-                                    Swal.close();
-                                } else {
+                                Swal.close();
+                            },
+                            error: function(xhr) {
+                                if (xhr.status === 422) {
                                     audio.play();
-                                    toastr.error(response.message ||
-                                        "Gagal mengupdate harga rumah.",
+                                    toastr.error("Ada inputan yang salah!",
                                         "GAGAL!", {
                                             progressBar: true,
                                             timeOut: 3500,
                                             positionClass: "toast-bottom-right",
                                         });
 
+                                    let errors = xhr.responseJSON.errors;
+                                    $.each(errors, function(key, val) {
+                                        let input = $('#' + key);
+                                        input.addClass('is-invalid');
+                                        input.parent().find(
+                                                '.invalid-feedback')
+                                            .remove();
+                                        input.parent().append(
+                                            '<span class="invalid-feedback" role="alert"><strong>' +
+                                            val[0] + '</strong></span>'
+                                        );
+                                    });
+
                                     btnText.innerHTML = 'Ya, Update';
                                     confirmBtn.disabled = false;
                                 }
-                            },
-                            error: function(xhr) {
-                                audio.play();
-                                let msg = xhr.responseJSON?.message ||
-                                    "Ada kesalahan!";
-                                toastr.error(msg, "GAGAL!", {
-                                    progressBar: true,
-                                    timeOut: 3500,
-                                    positionClass: "toast-bottom-right",
-                                });
-
-                                btnText.innerHTML = 'Ya, Update';
-                                confirmBtn.disabled = false;
                             }
                         });
                     });
@@ -680,49 +678,30 @@
                             method: 'POST',
                             data: form.serialize(),
                             success: function(response) {
-                                if (response.success) {
-                                    audio.play();
-                                    toastr.success(response.message ||
-                                        "Tagihan telah dihapus!",
-                                        "BERHASIL", {
-                                            progressBar: true,
-                                            timeOut: 3500,
-                                            positionClass: "toast-bottom-right"
-                                        });
-
-                                    $('.table-tagihan').DataTable().ajax.reload(
-                                        null,
-                                        false);
-                                    $('.table-pemasukan').DataTable().ajax.reload(
-                                        null,
-                                        false);
-                                    $('#total_tagihan_all').val(response
-                                        .total_tagihan_formatted);
-                                    $('#jumlah_bayar_all').val(response
-                                        .jumlah_bayar_formatted);
-                                    $('#sisa_bayar_all').val(response
-                                        .sisa_bayar_formatted);
-
-                                    Swal.close();
-                                } else {
-                                    audio.play();
-                                    toastr.error(response.message ||
-                                        "Gagal menghapus tagihan.",
-                                        "GAGAL!", {
-                                            progressBar: true,
-                                            timeOut: 3500,
-                                            positionClass: "toast-bottom-right"
-                                        });
-
-                                    btnText.innerHTML = `Ya, Hapus`;
-                                    confirmBtn.disabled = false;
-                                }
-                            },
-                            error: function(xhr) {
                                 audio.play();
-                                let msg = xhr.responseJSON?.message ||
-                                    "Gagal menghapus data.";
-                                toastr.error(msg, "GAGAL!", {
+                                toastr.success("Tagihan telah dihapus!",
+                                    "BERHASIL", {
+                                        progressBar: true,
+                                        timeOut: 3500,
+                                        positionClass: "toast-bottom-right"
+                                    });
+
+                                $('.table-tagihan').DataTable().ajax.reload(null,
+                                    false);
+                                $('.table-pemasukan').DataTable().ajax.reload(null,
+                                    false);
+                                $('#total_tagihan_all').val(response
+                                    .total_tagihan_formatted);
+                                $('#jumlah_bayar_all').val(response
+                                    .jumlah_bayar_formatted);
+                                $('#sisa_bayar_all').val(response
+                                    .sisa_bayar_formatted);
+
+                                Swal.close();
+                            },
+                            error: function() {
+                                audio.play();
+                                toastr.error("Gagal menghapus data.", "GAGAL!", {
                                     progressBar: true,
                                     timeOut: 3500,
                                     positionClass: "toast-bottom-right"
@@ -736,7 +715,6 @@
                 }
             });
         });
-
 
         $(function() {
             var customerId = '{{ $customer->id }}';
@@ -786,24 +764,9 @@
             });
         });
 
-        $('#modalTagihan').on('hidden.bs.modal', function() {
-            $('#formTagihan')[0].reset();
-            $('.select-kategori-transaksi-tagihan').val('').trigger('change');
-            $('.invalid-feedback').remove();
-
-            let submitBtn = $('#submitBtnPemasukan');
-            let spinner = submitBtn.find('.spinner-border');
-            let btnText = submitBtn.find('.button-text');
-
-            spinner.addClass('d-none');
-            btnText.text('Simpan');
-            submitBtn.prop('disabled', false);
-        });
-
         $('#modalPemasukan').on('hidden.bs.modal', function() {
             $('#formPemasukan')[0].reset();
             $('.select-kategori-transaksi-pemasukan').val('').trigger('change');
-            $('.select-tagihan').val('').trigger('change');
             $('.select-cara-bayar').val('').trigger('change');
             $('.is-invalid').removeClass('is-invalid');
             $('.invalid-feedback').remove();
@@ -818,6 +781,8 @@
 
             $('.label-tagihan').addClass('d-none');
             $('.div-tagihan').addClass('d-none');
+
+            $('#previewLampiran').html(`<span style="color: #6c757d;">Tidak ada berkas</span>`);
         });
 
         $('#formPemasukan').on('submit', function(e) {
@@ -869,38 +834,22 @@
                 error: function(xhr) {
                     if (xhr.status === 422) {
                         audio.play();
-
-                        if (xhr.responseJSON.message) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: xhr.responseJSON.message,
-                                confirmButtonText: 'OK',
-                                customClass: {
-                                    confirmButton: 'btn btn-primary'
-                                },
-                                buttonsStyling: false
-                            });
-                        } else {
-                            toastr.error("Ada inputan yang salah!", "GAGAL!", {
-                                progressBar: true,
-                                timeOut: 3500,
-                                positionClass: "toast-bottom-right",
-                            });
-                        }
+                        toastr.error("Ada inputan yang salah!", "GAGAL!", {
+                            progressBar: true,
+                            timeOut: 3500,
+                            positionClass: "toast-bottom-right",
+                        });
 
                         let errors = xhr.responseJSON.errors;
-                        if (errors) {
-                            $.each(errors, function(key, val) {
-                                let input = $('#' + key);
-                                input.addClass('is-invalid');
-                                input.parent().find('.invalid-feedback').remove();
-                                input.parent().append(
-                                    '<span class="invalid-feedback" role="alert"><strong>' +
-                                    val[0] + '</strong></span>'
-                                );
-                            });
-                        }
+                        $.each(errors, function(key, val) {
+                            let input = $('#' + key);
+                            input.addClass('is-invalid');
+                            input.parent().find('.invalid-feedback').remove();
+                            input.parent().append(
+                                '<span class="invalid-feedback" role="alert"><strong>' +
+                                val[0] + '</strong></span>'
+                            );
+                        });
                     } else {
                         audio.play();
                         toastr.error("Gagal menambahkan data.", "GAGAL!", {
@@ -950,45 +899,25 @@
                             method: 'POST',
                             data: form.serialize(),
                             success: function(response) {
-                                if (response.success) {
-                                    audio.play();
-                                    toastr.success(response.message ||
-                                        "Pemasukan telah dihapus!",
-                                        "BERHASIL", {
-                                            progressBar: true,
-                                            timeOut: 3500,
-                                            positionClass: "toast-bottom-right"
-                                        });
-
-                                    $('.table-pemasukan').DataTable().ajax.reload(
-                                        null,
-                                        false);
-                                    $('#jumlah_bayar_all').val(response
-                                        .jumlah_bayar);
-                                    $('#total_tagihan_all').val(response
-                                        .total_tagihan);
-                                    $('#sisa_bayar_all').val(response.sisa_bayar);
-
-                                    Swal.close();
-                                } else {
-                                    audio.play();
-                                    toastr.error(response.message ||
-                                        "Gagal menghapus pemasukan.",
-                                        "GAGAL!", {
-                                            progressBar: true,
-                                            timeOut: 3500,
-                                            positionClass: "toast-bottom-right"
-                                        });
-
-                                    btnText.innerHTML = `Ya, Hapus`;
-                                    confirmBtn.disabled = false;
-                                }
-                            },
-                            error: function(xhr) {
                                 audio.play();
-                                let msg = xhr.responseJSON?.message ||
-                                    "Gagal menghapus data.";
-                                toastr.error(msg, "GAGAL!", {
+                                toastr.success("Pemasukan telah dihapus!",
+                                    "BERHASIL", {
+                                        progressBar: true,
+                                        timeOut: 3500,
+                                        positionClass: "toast-bottom-right"
+                                    });
+
+                                $('.table-pemasukan').DataTable().ajax.reload(null,
+                                    false);
+                                $('#jumlah_bayar_all').val(response.jumlah_bayar);
+                                $('#total_tagihan_all').val(response.total_tagihan);
+                                $('#sisa_bayar_all').val(response.sisa_bayar);
+
+                                Swal.close();
+                            },
+                            error: function() {
+                                audio.play();
+                                toastr.error("Gagal menghapus data.", "GAGAL!", {
                                     progressBar: true,
                                     timeOut: 3500,
                                     positionClass: "toast-bottom-right"

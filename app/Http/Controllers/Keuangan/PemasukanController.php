@@ -9,7 +9,6 @@ use App\Models\Pemasukan;
 use App\Models\Piutang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class PemasukanController extends Controller
@@ -68,28 +67,33 @@ class PemasukanController extends Controller
                     $detailUrl = route('pemasukan.show', $row->id);
                     $deleteUrl = route('pemasukan.destroy', $row->id);
 
+                    $disabledKategori = in_array($row->id_kategori_transaksi, [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]);
+
                     $btn = '<div class="d-flex justify-content-center">';
+
                     if ($row->id_hutang != 0 || $row->id_customer != 0 || $row->id_mutasi != 0) {
-                        $btn .= '<button class="btn btn-primary btn-sm mx-1 detail-button" data-id="' . e($row->id) . '"
-                    data-url="' . e($detailUrl) . '">
-                    Detail
-                    </button>';
+                        $btn .= '<button class="btn btn-primary btn-sm mx-1 detail-button"
+            data-id="' . e($row->id) . '"
+            data-url="' . e($detailUrl) . '">
+            Detail
+        </button>';
                     } else {
                         if ($permissions['edit']) {
-                            $btn .= '<button class="btn btn-primary btn-sm mx-1 edit-button"
-                                data-id="' . e($row->id) . '"
-                                data-url="' . e($editUrl) . '">Edit</button>';
+                            $btn .= '<button class="btn btn-primary btn-sm mx-1 edit-button ' . ($disabledKategori ? 'disabled' : '') . '"
+                data-id="' . e($row->id) . '"
+                data-url="' . ($disabledKategori ? '#' : e($editUrl)) . '" ' . ($disabledKategori ? 'disabled' : '') . '>Edit</button>';
                         }
                     }
 
                     if ($permissions['hapus']) {
-                        $btn .= '<form action="' . e($deleteUrl) . '" method="POST" style="display:inline;">
-                    ' . csrf_field() . method_field('DELETE') . '
-                    <button type="submit" class="delete-button btn btn-danger btn-sm mx-1">
-                        Hapus
-                    </button>
-                    </form>';
+                        $btn .= '<form action="' . ($disabledKategori ? '#' : e($deleteUrl)) . '" method="POST" style="display:inline;">
+        ' . csrf_field() . method_field('DELETE') . '
+        <button type="submit" class="delete-button btn btn-danger btn-sm mx-1 ' . ($disabledKategori ? 'disabled' : '') . '" ' . ($disabledKategori ? 'disabled' : '') . '>
+            Hapus
+        </button>
+        </form>';
                     }
+
                     $btn .= '</div>';
                     return $btn;
                 })
@@ -99,11 +103,11 @@ class PemasukanController extends Controller
         }
 
         $kategoriTransaksi = KategoriTransaksi::where('jenis_kategori', 'PEMASUKAN')
-            ->whereNotIn('id', [1, 2, 3, 4, 5, 6, 7, 17])
+            ->whereNotIn('id', [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36])
             ->get();
 
         $kategoriTransaksiDetail = KategoriTransaksi::where('jenis_kategori', 'PEMASUKAN')
-            ->whereIn('id', [1, 2, 3, 4, 5, 6, 7, 17])
+            ->whereIn('id', [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36])
             ->get();
 
         $PiutangList = Piutang::where('status', 1)->where('id_customer', 0)->get();
@@ -215,9 +219,9 @@ class PemasukanController extends Controller
         }
 
         $request->validate($rules, [
-            'tanggal.required'  => 'Tanggal wajib diisi.',
-            'tanggal.date'      => 'Tanggal harus berupa tanggal.',
-            'nominal.required'  => 'Nominal wajib diisi.',
+            'tanggal.required' => 'Tanggal wajib diisi.',
+            'tanggal.date'     => 'Tanggal harus berupa tanggal.',
+            'nominal.required' => 'Nominal wajib diisi.',
         ]);
 
         $db = [

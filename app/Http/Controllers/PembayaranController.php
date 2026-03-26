@@ -269,6 +269,8 @@ class PembayaranController extends Controller
         $pembayaran = Pemasukan::with(['customer.piutangs', 'customer.lokasiKavling', 'metode', 'kategori'])
             ->findOrFail($id);
 
+        $logo = DB::table('konfigurasi_media')->where('jenis_data', 'kwitansi')->value('nama_file');
+
         $customer    = $pembayaran->customer;
         $konfigurasi = KonfigurasiAplikasi::first();
 
@@ -328,24 +330,30 @@ class PembayaranController extends Controller
 
         $pdf->Rect(8, 8, 194, 132, 'D');
 
-        $pdf->SetXY(12, 12);
+        $logoPath = public_path('config_media/' . $logo);
+
+        if (file_exists($logoPath)) {
+            $pdf->Image($logoPath, 12, 12, 20, 20);
+        }
+
+        $pdf->SetXY(35, 12);
         $pdf->SetFont('helvetica', 'B', 10);
         $pdf->Cell(70, 5, $data['perusahaan'], 0, 1, 'L');
 
-        $pdf->SetX(12);
+        $pdf->SetX(35);
         $pdf->SetFont('helvetica', '', 8);
 
 // WRAP ALAMAT
         $alamat  = $data['alamat'];
-        $maxChar = 87;
+        $maxChar = 74;
         $lines   = str_split($alamat, $maxChar);
 
         foreach ($lines as $line) {
-            $pdf->SetX(12);
+            $pdf->SetX(35);
             $pdf->Cell(70, 4, trim($line), 0, 1, 'L');
         }
 
-        $pdf->SetX(12);
+        $pdf->SetX(35);
         $pdf->Cell(70, 4, $data['telp'], 0, 1, 'L');
 
         $pdf->SetFont('helvetica', '', 8.5);

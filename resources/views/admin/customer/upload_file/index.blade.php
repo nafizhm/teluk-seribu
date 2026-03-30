@@ -98,6 +98,7 @@
                                 <option value="KTP Pasangan">Foto KTP Pasangan</option>
                                 <option value="NPWP">Foto NPWP</option>
                                 <option value="BPJS">Foto BPJS</option>
+                                <option value="Bukti Bayar">Bukti Bayar</option>
                             </select>
                         </div>
 

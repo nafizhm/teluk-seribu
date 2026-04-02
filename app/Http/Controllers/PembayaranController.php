@@ -481,13 +481,13 @@ class PembayaranController extends Controller
         $pdf->Rect($xPerh, $y - 4, 60, 14, 'D');
 
         $xR = 155;
-        $pdf->SetXY($xR, $y - 10);
+        $pdf->SetXY($xR, $y - 15);
         $pdf->SetFont('helvetica', '', 8.5);
         $pdf->Cell(45, 5, $data['tgl_cetak'], 0, 0, 'R');
 
         $pdf->SetXY($xR, $y + 5);
         $pdf->SetFont('helvetica', 'I', 9);
-        $pdf->Cell(45, 5, 'gsoft', 0, 0, 'R');
+        $pdf->Cell(45, 5, 'Vivi Ratnasari', 0, 0, 'R');
 
         $filename = 'kwitansi_' . $data['faktur_no'] . '.pdf';
         $pdf->Output($filename, 'I');

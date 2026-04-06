@@ -312,7 +312,7 @@ class PembayaranController extends Controller
             'tgl_cetak'      => Carbon::now()->translatedFormat('d F Y'),
         ];
 
-        $pdf = new TCPDF('L', 'mm', [210, 148], true, 'UTF-8', false);
+        $pdf = new TCPDF('L', 'mm', 'A5', true, 'UTF-8', false);
 
         $pdf->SetCreator($data['perusahaan']);
         $pdf->SetAuthor($data['perusahaan']);

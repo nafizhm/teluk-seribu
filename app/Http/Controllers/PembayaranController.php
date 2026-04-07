@@ -487,7 +487,7 @@ class PembayaranController extends Controller
 
         $pdf->SetXY($xR, $y + 5);
         $pdf->SetFont('helvetica', 'I', 9);
-        $pdf->Cell(45, 5, 'Vivi Ratnasari', 0, 0, 'R');
+        $pdf->Cell(45, 5, 'Deta Marcha', 0, 0, 'R');
 
         $filename = 'kwitansi_' . $data['faktur_no'] . '.pdf';
         $pdf->Output($filename, 'I');

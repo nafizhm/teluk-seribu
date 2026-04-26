@@ -57,13 +57,9 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    {{-- Card Container: Ditambah border-0 dan overflow-hidden agar rounded corner rapi --}}
                     <div class="card shadow-sm border-0 overflow-hidden mb-4">
-
-                        {{-- Header Bagian Atas (Pengganti widget-user-header) --}}
                         <div class="card-header bg-danger text-white p-3">
                             <div class="d-flex align-items-center">
-                                {{-- Bagian Gambar/Logo --}}
                                 <div class="flex-shrink-0 me-3">
                                     <img class="rounded-circle border border-2 border-white"
                                         style="width: 65px; height: 65px; object-fit: cover;"
@@ -71,7 +67,6 @@
                                         alt="User Avatar">
                                 </div>
 
-                                {{-- Bagian Teks Judul --}}
                                 <div class="flex-grow-1">
                                     <h4 class="mb-0 fw-bold text-white">Statistik Penjualan per Lokasi</h4>
                                     <p class="mb-0 text-white-50 small">
@@ -81,10 +76,8 @@
                             </div>
                         </div>
 
-                        {{-- Body Card: Berisi Tabel --}}
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                {{-- Ditambah table-striped dan table-hover untuk estetika --}}
                                 <table class="table table-bordered table-striped table-hover mb-0 align-middle">
                                     <thead>
                                         <tr>
@@ -155,65 +148,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- <div class="row">
-                <div class="card shadow-sm border-0 overflow-hidden mb-4">
-                    <div class="card-header bg-primary text-white p-3">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0 me-3">
-                                <img class="rounded-circle border border-2 border-white"
-                                    style="width: 65px; height: 65px; object-fit: cover;"
-                                    src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
-                                    alt="User Avatar">
-                            </div>
-
-                            <div class="flex-grow-1">
-                                <h4 class="mb-0 fw-bold text-white">Statistik Unit Ready per Perumahan</h4>
-                                <p class="mb-0 text-white-50 small">
-                                    <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover mb-0 align-middle">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" width="5%">No</th>
-                                        <th width="30%">Nama Perumahan</th>
-                                        <th width="6%" class="text-center">Jumlah</th>
-
-                                        @foreach ($kolomStatusReady as $status)
-                                            <th class="text-center">{{ strtoupper($status->keterangan) }}</th>
-                                        @endforeach
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($dataLokasiReady as $lokasi)
-                                        <tr>
-                                            <td class="text-center">{{ $loop->iteration }}</td>
-
-                                            <td class="fw-bold">{{ $lokasi['nama'] }}</td>
-
-                                            <td align="center" class="table-warning fw-bold">{{ $lokasi['jumlah'] }}
-                                            </td>
-
-                                            @foreach ($kolomStatusReady as $status)
-                                                @php
-                                                    $key = strtolower(str_replace(' ', '_', $status->keterangan));
-                                                @endphp
-                                                <td align="center" width="5%">{{ $lokasi[$key] ?? 0 }}</td>
-                                            @endforeach
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
 
             <div class="row">
                 <div class="col-md-6">
@@ -301,11 +235,8 @@
             </div>
 
             <div class="row">
-                {{-- WIDGET 1: Statistik Status Progres --}}
                 <div class="col-md-6">
                     <div class="card shadow-sm border-0 overflow-hidden mb-4">
-
-                        {{-- Header: bg-primary --}}
                         <div class="card-header bg-primary text-white p-3">
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
@@ -323,7 +254,6 @@
                             </div>
                         </div>
 
-                        {{-- Body --}}
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover mb-0 align-middle">
@@ -366,11 +296,8 @@
 
                 <div class="col-md-6">
                     <div class="card shadow-sm border-0 overflow-hidden mb-4">
-
-                        {{-- Header: bg-success (Hijau) --}}
                         <div class="card-header bg-success text-white p-3">
                             <div class="d-flex align-items-center">
-                                {{-- Bagian Gambar/Avatar --}}
                                 <div class="flex-shrink-0 me-3">
                                     <img class="rounded-circle border border-2 border-white"
                                         style="width: 65px; height: 65px; object-fit: cover;"
@@ -378,7 +305,6 @@
                                         alt="User Avatar">
                                 </div>
 
-                                {{-- Bagian Judul --}}
                                 <div class="flex-grow-1">
                                     <h4 class="mb-0 fw-bold text-white">Statistik Penjualan Marketing</h4>
                                     <p class="mb-0 text-white-50 small">
@@ -388,7 +314,6 @@
                             </div>
                         </div>
 
-                        {{-- Body: Tabel --}}
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped table-hover mb-0 align-middle">

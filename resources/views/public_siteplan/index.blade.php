@@ -382,45 +382,52 @@
     </div>
 
     {{-- Detail Popup --}}
-    <div id="popupOverlay">
-        <div id="popupBox">
-            <button id="popupClose" onclick="closePopup()">&times;</button>
-            <div class="popup-arrow"></div>
+    {{-- Detail Popup --}}
+<div id="popupOverlay">
+    <div id="popupBox">
+        <button id="popupClose" onclick="closePopup()">&times;</button>
 
-            <div class="popup-title">Detail Kavling</div>
+        <div class="popup-title">Detail Kavling</div>
 
-            <div class="popup-row">
-                <span class="popup-label">Perumahan</span>
-                <span class="popup-value" id="p_nama_kavling">-</span>
-            </div>
-            <div class="popup-row">
-                <span class="popup-label">Kode Kavling</span>
-                <span class="popup-value" id="p_kode_kavling">-</span>
-            </div>
-            <div class="popup-row">
-                <span class="popup-label">Tipe</span>
-                <span class="popup-value"><span id="p_tipe_bangunan">-</span></span>
-            </div>
-            <div class="popup-row">
-                <span class="popup-label">Luas Tanah</span>
-                <span class="popup-value"><span id="p_luas_tanah">-</span> m²</span>
-            </div>
-            <div class="popup-row">
-                <span class="popup-label">Luas Bangunan</span>
-                <span class="popup-value"><span id="p_luas_bangunan">-</span> m²</span>
-            </div>
+        <div class="popup-row">
+            <span class="popup-label">Perumahan</span>
+            <span class="popup-value" id="p_nama_kavling">-</span>
+        </div>
+        <div class="popup-row">
+            <span class="popup-label">Kode Kavling</span>
+            <span class="popup-value" id="p_kode_kavling">-</span>
+        </div>
+        <div class="popup-row">
+            <span class="popup-label">Tipe</span>
+            <span class="popup-value" id="p_tipe_bangunan">-</span>
+        </div>
+        <div class="popup-row">
+            <span class="popup-label">Luas Tanah</span>
+            <span class="popup-value"><span id="p_luas_tanah">-</span> m²</span>
+        </div>
+        <div class="popup-row">
+            <span class="popup-label">Luas Bangunan</span>
+            <span class="popup-value"><span id="p_luas_bangunan">-</span> m²</span>
+        </div>
 
-            <div class="popup-price">
-                <span class="popup-label font-weight-bold">Harga Jual</span>
-                <span class="value"><span id="p_currency">Rp</span> <span id="p_hrg_jual">0</span></span>
-            </div>
+        <div class="popup-price">
+            <span class="popup-label font-weight-bold">Harga Jual</span>
+            <span class="value">Rp <span id="p_hrg_jual">0</span></span>
+        </div>
+
+        {{-- Sold badge, tersembunyi secara default --}}
+        <div id="mark_sold_container" style="display:none; margin-top:12px; text-align:center;">
+            <span class="px-3 py-2 badge badge-danger" style="font-size:0.85rem;">
+                Kavling Sudah Terjual
+            </span>
         </div>
     </div>
+</div>
 @endsection
 
 @push('scripts')
     <script>
-        let currentTargetElement = null;
+         let currentTargetElement = null;
         let popupUpdateInterval = null;
 
         function toggleLegend() {
@@ -434,69 +441,90 @@
             const popupBox = document.getElementById('popupBox');
             const popupWidth = popupBox.offsetWidth;
             const popupHeight = popupBox.offsetHeight;
+            const arrow = $('.popup-arrow');
 
             const targetCenterX = targetRect.left + (targetRect.width / 2);
             const targetCenterY = targetRect.top + (targetRect.height / 2);
 
             let left = targetCenterX - (popupWidth / 2);
-            let top = targetCenterY - popupHeight - 25;
+            let top = targetCenterY - popupHeight - 15;
 
             const margin = 15;
             const winW = $(window).width();
             const winH = $(window).height();
 
+            // Clamp horizontal position
             if (left < margin) left = margin;
             else if (left + popupWidth > winW - margin) left = winW - popupWidth - margin;
 
+            // Calculate arrow offset so it points to the target center
+            let arrowLeft = targetCenterX - left;
+            arrowLeft = Math.max(20, Math.min(arrowLeft, popupWidth - 20));
+
             if (top < margin) {
-                top = targetCenterY + 25;
-                $('.popup-arrow').css({
-                    'bottom': 'auto', 'top': '-10px',
-                    'border-top': 'none', 'border-bottom': '10px solid #fff'
-                });
+                // Show popup below the target, arrow on top
+                top = targetCenterY + 15;
+                arrow.removeClass('arrow-bottom').addClass('arrow-top');
             } else {
-                $('.popup-arrow').css({
-                    'bottom': '-10px', 'top': 'auto',
-                    'border-top': '10px solid #fff', 'border-bottom': 'none'
-                });
+                // Show popup above the target, arrow on bottom
+                arrow.removeClass('arrow-top').addClass('arrow-bottom');
             }
 
+            arrow.css({ left: arrowLeft + 'px', transform: 'translateX(-50%)' });
             $('#popupOverlay').css({ left: left + 'px', top: top + 'px' });
         }
 
-        $(document).on('click', '.detail-button', function(e) {
+
+        $(document).on('click', '.detail-button', function (e) {
             e.preventDefault();
             e.stopPropagation();
+
+            // Hapus highlight sebelumnya, tambah ke yang diklik
+            $('.detail-button.kavling-active').removeClass('kavling-active');
+            $(this).addClass('kavling-active');
 
             let url = $(this).data('url');
             currentTargetElement = this;
 
-            $.get(url, function(res) {
-                if (res.success) {
-                    $('#p_nama_kavling').text(res.data.lokasi.nama_kavling);
-                    $('#p_kode_kavling').text(res.data.kode_kavling);
-                    $('#p_tipe_bangunan').text(res.data.tipe_bangunan);
-                    $('#p_luas_tanah').text(res.data.luas_tanah);
-                    $('#p_luas_bangunan').text(res.data.luas_bangunan);
-                    if (res.cash_price > 0) {
-                        $('#p_hrg_jual').text(parseFloat(res.cash_price).toLocaleString('id-ID'));
-                        $('#p_currency').show();
-                        $('.popup-price').show();
-                    } else {
-                        $('#p_hrg_jual').text('Harga belum tersedia');
-                        $('#p_currency').hide();
-                    }
+            $.get(url, function (res) {
+                if (!res.success) return;
 
-                    $('#popupOverlay').fadeIn(200, function() { updatePopupPosition(); });
+                const d = res.data;
 
-                    if (popupUpdateInterval) clearInterval(popupUpdateInterval);
-                    popupUpdateInterval = setInterval(updatePopupPosition, 50);
+                $('#p_nama_kavling').text(d.lokasi.nama_kavling);
+                $('#p_kode_kavling').text(d.kode_kavling);
+                $('#p_tipe_bangunan').text(d.tipe_bangunan);
+                $('#p_luas_tanah').text(d.luas_tanah);
+                $('#p_luas_bangunan').text(d.luas_bangunan);
+
+                const harga = parseFloat(d.hrg_jual || 0);
+                $('#p_hrg_jual').text(harga.toLocaleString('id-ID'));
+
+                // Tampilkan badge terjual jika status == 2
+                if (parseInt(d.status) === 2) {
+                    $('#mark_sold_container').show();
+                    $('.popup-price').hide();
+                } else {
+                    $('#mark_sold_container').hide();
+                    $('.popup-price').show();
                 }
+
+                $('#popupOverlay').css('display', 'block').fadeIn(200, function () {
+                    updatePopupPosition();
+                });
+
+                if (popupUpdateInterval) clearInterval(popupUpdateInterval);
+                popupUpdateInterval = setInterval(updatePopupPosition, 50);
+
+            }).fail(function () {
+                alert('Gagal memuat data kavling. Silakan coba lagi.');
             });
         });
 
         function closePopup() {
             $('#popupOverlay').fadeOut(200);
+            // Remove kavling highlight
+            $('.detail-button.kavling-active').removeClass('kavling-active');
             currentTargetElement = null;
             if (popupUpdateInterval) clearInterval(popupUpdateInterval);
         }

@@ -39,21 +39,23 @@ class PublicSiteplanController extends Controller
     /**
      * Fetch kavling details for the public popup.
      */
-     public function show($id)
+    public function show($id)
     {
-        $data = KavlingPeta::with(['lokasi', 'customer', 'listrikAir'])->findOrFail($id);
-
-        $tagihanList   = Piutang::where('id_customer', $data->id_customer)->orderBy('id')->get();
-        $pemasukanList = Pemasukan::with('kategori')->where('id_customer', $data->id_customer)->get();
+        $data = KavlingPeta::with(['lokasi'])->findOrFail($id);
 
         return response()->json([
-            'success'         => true,
-            'data'            => $data,
-            'tagihan'         => $tagihanList,
-            'listrik_air' => $data->listrikAir,
-            'pemasukan'       => $pemasukanList,
-            'total_tagihan'   => $tagihanList->sum('nominal'),
-            'total_pemasukan' => $pemasukanList->sum('nominal'),
+            'success'       => true,
+            'data'          => [
+                'kode_kavling'   => $data->kode_kavling ?? '-',
+                'tipe_bangunan'  => $data->tipe_bangunan ?? '-',
+                'luas_tanah'     => $data->luas_tanah ?? 0,
+                'luas_bangunan'  => $data->luas_bangunan ?? 0,
+                'hrg_jual'       => $data->hrg_jual ?? 0,
+                'status'         => $data->status,
+                'lokasi'         => [
+                    'nama_kavling' => $data->lokasi->nama_kavling ?? '-',
+                ],
+            ],
         ]);
     }
 }

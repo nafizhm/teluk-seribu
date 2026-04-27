@@ -32,6 +32,7 @@ use App\Http\Controllers\Pengaturan\PenggunaController;
 use App\Http\Controllers\PengaturanWA\PengaturanKoneksiController;
 use App\Http\Controllers\PengaturanWA\PengaturanPesanController;
 use App\Http\Controllers\STPenjualan\SiteplanPenjualanController;
+use App\Http\Controllers\STPenjualan\PublicSiteplanController;
 use App\Http\Controllers\Utility\GetController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+Route::get('siteplan', [PublicSiteplanController::class, 'index'])->name('public.siteplan.index');
+Route::get('siteplan/detail/{id}', [PublicSiteplanController::class, 'show'])->name('public.siteplan.show');
 
 // Route::get('/', [PengaturanLandingController::class, 'homepage'])->name('homepage');
 Route::get('/Kavling/{id}', [PengaturanLandingController::class, 'detailKavling'])->name('kavling.detail');

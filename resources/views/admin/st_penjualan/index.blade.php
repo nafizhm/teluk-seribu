@@ -124,7 +124,7 @@
                 </div>
                 <div class="card-body">
                     <!-- Tabs -->
-                    <ul class="nav nav-tabs mb-3" id="lokasiTab" role="tablist">
+                    <ul class="mb-3 nav nav-tabs" id="lokasiTab" role="tablist">
                         @foreach ($lokasiKavling as $index => $kav)
                             <li class="nav-item" role="presentation">
                                 <a class="nav-link {{ $index == 0 ? 'active' : '' }}" id="lokasi-{{ $kav->id }}-tab"
@@ -149,7 +149,7 @@
                                     <div class="siteplan-content"></div>
                                 @else
                                     <div class="siteplan-content">
-                                        <div class="text-center py-4">
+                                        <div class="py-4 text-center">
                                             <p>Click to load siteplan data</p>
                                         </div>
                                     </div>
@@ -174,14 +174,14 @@
                     </div>
                 @endforeach
 
-                <button class="toggle-btn btn btn-secondary mt-2" onclick="toggleLegend()">
+                <button class="mt-2 toggle-btn btn btn-secondary" onclick="toggleLegend()">
                     <i class="fas fa-times me-1"></i> Hide Legend
                 </button>
             </div>
         </section>
     </div>
 
-    <div class="modal fade text-left" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel"
+    <div class="text-left modal fade" id="modalDetail" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel"
         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" data-bs-focus="false">
 
         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
@@ -198,7 +198,7 @@
                     <div class="modal-body">
                         <input type="hidden" id="id_lokasi" name="id_lokasi" value="">
 
-                        <div class="d-flex justify-content-end mb-3">
+                        <div class="mb-3 d-flex justify-content-end">
                             <button type="button" class="btn btn-primary btn-sm" id="btn-cetak">
                                 <i class="fas fa-print"></i> Cetak Data
                             </button>
@@ -206,7 +206,7 @@
 
                         <div class="card">
                             <div class="card-body">
-                                <ul class="nav nav-tabs mb-3" id="tabDetail" role="tablist">
+                                <ul class="mb-3 nav nav-tabs" id="tabDetail" role="tablist">
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link active" id="page-1-tab" data-bs-toggle="pill" href="#page-1"
                                             role="tab" aria-controls="page-1" aria-selected="true">
@@ -236,7 +236,7 @@
                                     <div class="tab-pane fade show active" id="page-1">
                                         <!-- Lokasi Tanah Kavling -->
 
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="lokasi_id" class="col-sm-3 col-form-label">Lokasi
                                                 Kavling</label>
                                             <div class="col-sm-3">
@@ -245,7 +245,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="kode_kavling_id" class="col-sm-3 col-form-label">Lokasi
                                                 Tanah Kavling</label>
                                             <div class="col-sm-3">
@@ -255,7 +255,7 @@
                                         </div>
 
                                         <!-- Panjang Tanah dan Lebar Tanah -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="panjang_kanan_id" class="col-sm-3 col-form-label">Panjang
                                                 Tanah</label>
                                             <div class="col-sm-3">
@@ -271,7 +271,7 @@
                                         </div>
 
                                         <!-- Luas Tanah -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="luas_tanah_id" class="col-sm-3 col-form-label">Luas Tanah</label>
                                             <div class="col-sm-3">
                                                 <input name="luas_tanah" id="luas_tanah_id" class="form-control"
@@ -281,7 +281,7 @@
 
 
                                         <!-- Harga Jual -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="harga_id" class="col-sm-3 col-form-label">Harga Jual</label>
                                             <div class="col-sm-3">
                                                 <input name="harga" id="harga_id" class="form-control" type="text"
@@ -291,7 +291,7 @@
 
 
                                         <!-- Keterangan -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="keterangan_id" class="col-sm-3 col-form-label">Keterangan</label>
                                             <div class="col-sm-3">
                                                 <input name="keterangan" id="keterangan_id" class="form-control"
@@ -302,7 +302,7 @@
                                         <hr>
 
                                         <!-- ID Tanah Kavling -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="id_rumah_sikumbang_id" class="col-sm-3 col-form-label">ID
                                                 Tanah Kavling</label>
                                             <div class="col-sm-3">
@@ -313,7 +313,7 @@
 
 
                                         <!-- No. Sertipikat -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="no_sertifikat_id" class="col-sm-3 col-form-label">No.
                                                 Sertipikat</label>
                                             <div class="col-sm-3">
@@ -325,7 +325,7 @@
 
                                     <div class="tab-pane fade" id="page-2">
                                         <!-- Nama Lengkap -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="nama_lengkap_id" class="col-sm-3 col-form-label">Nama
                                                 Lengkap</label>
                                             <div class="col-sm-8">
@@ -335,7 +335,7 @@
                                         </div>
 
                                         <!-- No. KTP -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="no_ktp_id" class="col-sm-3 col-form-label">No. KTP</label>
                                             <div class="col-sm-3">
                                                 <input name="no_ktp" id="no_ktp_id" class="form-control" type="text"
@@ -350,7 +350,7 @@
                                         </div>
 
                                         <!-- Tempat Lahir -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="tempat_lahir_id" class="col-sm-3 col-form-label">Tempat
                                                 Lahir</label>
                                             <div class="col-sm-3">
@@ -366,7 +366,7 @@
                                         </div>
 
                                         <!-- Jenis Kelamin -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="jenis_kelamin_id" class="col-sm-3 col-form-label">Jenis
                                                 Kelamin</label>
                                             <div class="col-sm-3">
@@ -376,7 +376,7 @@
                                         </div>
 
                                         <!-- Alamat KTP -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="alamat_id" class="col-sm-3 col-form-label">Alamat KTP</label>
                                             <div class="col-sm-8">
                                                 <textarea name="alamat" id="alamat_id" class="form-control" rows="2" readonly></textarea>
@@ -384,7 +384,7 @@
                                         </div>
 
                                         <!-- Alamat Domisili -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="alamat_domisili_id" class="col-sm-3 col-form-label">Alamat
                                                 Domisili</label>
                                             <div class="col-sm-8">
@@ -393,7 +393,7 @@
                                         </div>
 
                                         <!-- No. Telp / WA -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="no_telp_id" class="col-sm-3 col-form-label">No. Telp / WA</label>
                                             <div class="col-sm-3">
                                                 <input name="no_telp" id="no_telp_id" class="form-control"
@@ -402,7 +402,7 @@
                                         </div>
 
                                         <!-- NPWP -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="npwp_id" class="col-sm-3 col-form-label">NPWP</label>
                                             <div class="col-sm-3">
                                                 <input name="npwp" id="npwp_id" class="form-control" type="text"
@@ -411,7 +411,7 @@
                                         </div>
 
                                         <!-- Jenis Pembelian -->
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label for="jenis_pembelian_id" class="col-sm-3 col-form-label">Jenis
                                                 Pembelian</label>
                                             <div class="col-sm-3">
@@ -422,7 +422,7 @@
 
                                         <hr>
 
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label class="col-sm-3 col-form-label">Foto KTP</label>
                                             <div class="col-sm-3">
                                                 <a href="#" class="view-photo-link" id="fotoKtpLink"
@@ -441,7 +441,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label class="col-sm-3 col-form-label">Foto KK</label>
                                             <div class="col-sm-3">
                                                 <a href="#" class="view-photo-link" id="fotoKkLink"
@@ -460,7 +460,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="row mb-3">
+                                        <div class="mb-3 row">
                                             <label class="col-sm-3 col-form-label">Foto NPWP</label>
                                             <div class="col-sm-3">
                                                 <a href="#" class="view-photo-link" id="fotoNpwpLink"
@@ -507,7 +507,7 @@
 
                                             {{-- Tabel Pembayaran --}}
                                             <h5>- Pemasukan - </h5>
-                                            <table class="table table-bordered table-sm mt-3">
+                                            <table class="table mt-3 table-bordered table-sm">
                                                 <thead>
                                                     <tr class="table-success">
                                                         <th>No</th>
@@ -529,7 +529,7 @@
 
                                             {{-- Tabel Pengeluaran --}}
                                             <h5>- Pengeluaran - </h5>
-                                            <table class="table table-bordered table-sm mt-3">
+                                            <table class="table mt-3 table-bordered table-sm">
                                                 <thead>
                                                     <tr class="table-danger">
                                                         <th>No</th>
@@ -657,7 +657,7 @@
 
             if (!contentDiv.find('.loading-spinner').length) {
                 contentDiv.html(`
-                    <div class="loading-spinner text-center d-flex justify-content-center align-items-center">
+                    <div class="text-center loading-spinner d-flex justify-content-center align-items-center">
                         <div class="spinner-border text-primary me-2" role="status"></div>
                         <span class="ml-2">Memuat Siteplan...</span>
                     </div>
@@ -691,7 +691,7 @@
                     contentDiv.html(`
                         <div class="alert alert-danger">
                             Gagal memuat siteplan. Silakan coba lagi.
-                            <br><button class="btn btn-sm btn-primary mt-2" onclick="loadSiteplanData(${idLokasi})">Retry</button>
+                            <br><button class="mt-2 btn btn-sm btn-primary" onclick="loadSiteplanData(${idLokasi})">Retry</button>
                         </div>
                     `);
                     toastr.error("Gagal memuat siteplan.", "GAGAL!", {

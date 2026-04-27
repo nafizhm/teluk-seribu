@@ -39,6 +39,11 @@ class KavlingPeta extends Model
         return $this->belongsTo(LokasiKavling::class, 'id_lokasi');
     }
 
+    public function customerSingle()
+    {
+        return $this->belongsTo(Customer::class, 'id_customer');
+    }
+
     // Tetap SINGULAR (customer) sesuai request
     public function customer()
     {
@@ -50,7 +55,20 @@ class KavlingPeta extends Model
         )->withPivot('tgl_terima', 'hrg_rumah');
     }
 
-    
+
+    public function activeCustomer()
+        {
+            return $this->belongsToMany(
+                    Customer::class,
+                    'transaksi_kavling',
+                    'id_kavling',
+                    'id_customer'
+                )
+                ->withPivot('tgl_terima', 'hrg_rumah')
+                ->limit(1);  // treat as single for eager loading
+        }
+
+
     public function progres()
     {
         return $this->belongsTo(ListPenjualan::class, 'id_status_progres');

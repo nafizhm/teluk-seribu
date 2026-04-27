@@ -50,32 +50,22 @@ class SiteplanPenjualanController extends Controller
 
             $lokasi->masterSvg = MasterSVG::where('id_lokasi', $lokasi->id)->first();
 
-            // Eager load customer untuk menghindari N+1 Query
             $lokasi->kavlingPeta = KavlingPeta::with('customer')
                 ->where('id_lokasi', $lokasi->id)
                 ->get();
 
             foreach ($lokasi->kavlingPeta as $kavling) {
-                // LOGIKA BARU: Ambil customer pertama dari relasi many-to-many
-                // Asumsi: Satu kavling pada satu waktu hanya dimiliki 1 customer aktif
                 $owner = $kavling->customer->first();
 
-                // Kita timpa relasi 'customer' di objek ini agar View blade tidak bingung
-                // (View mengharapkan objek/null, bukan Collection)
                 if ($owner) {
-                    // Set manual properti customer dengan data owner
                     $kavling->setRelation('customer', $owner);
 
-                    // Ambil progres berdasarkan status customer
                     $kavling->progres = ListPenjualan::where('id', $owner->id_status_progres)->first();
                 } else {
-                    // Kosongkan relasi jika tidak ada owner
                     $kavling->setRelation('customer', null);
                     $kavling->progres = null;
                 }
 
-                // Logika registrasi (Jika menggunakan logika hold/booking lama)
-                // Menggunakan owner yang sama
                 $kavling->registrasi = $owner;
             }
 
@@ -276,8 +266,8 @@ class SiteplanPenjualanController extends Controller
 
         if ($fotoKavling->count() > 0) {
             foreach ($fotoKavling as $foto) {
-                $html .= '<div class="col-md-3 mb-3 text-center">';
-                $html .= '<img src="' . asset($foto->lampiran) . '" class="img-fluid mb-2" alt="Foto" style="max-height:200px; object-fit:cover; border:1px solid #ddd; padding:5px;">';
+                $html .= '<div class="mb-3 text-center col-md-3">';
+                $html .= '<img src="' . asset($foto->lampiran) . '" class="mb-2 img-fluid" alt="Foto" style="max-height:200px; object-fit:cover; border:1px solid #ddd; padding:5px;">';
                 $html .= '<div><strong>' . $foto->keterangan . '</strong></div>';
                 $html .= '</div>';
             }

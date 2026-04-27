@@ -2,53 +2,81 @@
 @section('content')
     @php
         $logo = \App\Models\KonfigurasiMedia::where('jenis_data', 'logo website')->first();
+
+        $bgCard1 = DB::table('konfigurasi_media')->where('jenis_data', 'Background Card1')->value('nama_file');
+        $bgCard2 = DB::table('konfigurasi_media')->where('jenis_data', 'Background Card2')->value('nama_file');
+        $bgCard3 = DB::table('konfigurasi_media')->where('jenis_data', 'Background Card3')->value('nama_file');
+        $bgCard4 = DB::table('konfigurasi_media')->where('jenis_data', 'Background Card4')->value('nama_file');
+        $bgHeaderCard = DB::table('konfigurasi_media')->where('jenis_data', 'Background Header Card')->value('nama_file');
+
     @endphp
 
     <div class="page-content">
-        <section class="section d-flex flex-column gap-3">
+        <section class="gap-3 section d-flex flex-column">
             <div class="row">
                 <div class="col-lg-3 col-md-6">
-                    <div class="card bg-warning text-white ">
+                    <div class="text-white card"
+                        style="
+                            background-image: {{ $bgCard1 ? "url('" . asset('config_media/' . $bgCard1) . "')" : 'none' }};
+                            background-color: {{ $bgCard1 ? 'transparent' : '' }};
+                            {{ $bgCard1 ? 'background-size: cover; background-position: center; background-repeat: no-repeat;' : '' }}
+                            {{ !$bgCard1 ? 'background-color: #ffc107;' : '' }}
+                        ">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">{{ $jumlahKavling }}</h3>
-                                <p class="card-text mb-0">Jumlah Kavling</p>
+                                <h3 class="mb-1 card-title">{{ $jumlahKavling }}</h3>
+                                <p class="mb-0 card-text">Jumlah Kavling</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <div class="card bg-success text-white ">
+                    <div class="text-white card"
+                        style="
+                            background-image: {{ $bgCard2 ? " url('" . asset('config_media/' . $bgCard2) . "')" : 'none' }};
+                            background-size: cover; background-position: center; background-repeat: no-repeat;
+                            {{ !$bgCard2 ? 'background-color: #198754;' : '' }}
+                        ">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">{{ $sudahLaku }}</h3>
-                                <p class="card-text mb-0">Sudah Laku</p>
+                                <h3 class="mb-1 card-title">{{ $sudahLaku }}</h3>
+                                <p class="mb-0 card-text">Sudah Laku</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <div class="card bg-secondary text-white ">
+                    <div class="text-white card"
+                        style="
+                            background-image: {{ $bgCard3 ? "linear-gradient(rgba(108, 117, 125, 0.75), rgba(108, 117, 125, 0.75)), url('" . asset('config_media/' . $bgCard3) . "')" : 'none' }};
+                            background-size: cover; background-position: center; background-repeat: no-repeat;
+                            {{ !$bgCard3 ? 'background-color: #6c757d;' : '' }}
+                        ">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">{{ $sisaLaku }}</h3>
-                                <p class="card-text mb-0">Sisa</p>
+                                <h3 class="mb-1 card-title">{{ $sisaLaku }}</h3>
+                                <p class="mb-0 card-text">Sisa</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-lg-3 col-md-6">
-                    <div class="card bg-info text-white position-relative">
+                    <div class="text-white card position-relative"
+                        style="
+                            background-image: {{ $bgCard4 ? "linear-gradient(rgba(13, 202, 240, 0.75), rgba(13, 202, 240, 0.75)), url('" . asset('config_media/' . $bgCard4) . "')" : 'none' }};
+                            background-size: cover; background-position: center; background-repeat: no-repeat;
+                            {{ !$bgCard4 ? 'background-color: #0dcaf0;' : '' }}
+                        ">
                         <a href="{{ route('dashboard.detail-penjualan') }}" class="stretched-link"></a>
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
-                                <h3 class="card-title mb-1">
+                                <h3 class="mb-1 card-title">
                                     <i class="bi bi-arrow-right-circle"></i>
                                 </h3>
-                                <p class="card-text mb-0">Detail Penjualan</p>
+                                <p class="mb-0 card-text">Detail Penjualan</p>
                             </div>
                         </div>
                     </div>
@@ -57,28 +85,49 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card shadow-sm border-0 overflow-hidden mb-4">
-                        <div class="card-header bg-danger text-white p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-shrink-0 me-3">
-                                    <img class="rounded-circle border border-2 border-white"
-                                        style="width: 65px; height: 65px; object-fit: cover;"
-                                        src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
-                                        alt="User Avatar">
-                                </div>
+                    <div class="mb-4 overflow-hidden border-0 shadow-sm card">
+                       <div class="p-3 overflow-hidden text-white bg-danger position-relative"
+                        style="border-radius: inherit;">
 
-                                <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold text-white">Statistik Penjualan per Lokasi</h4>
-                                    <p class="mb-0 text-white-50 small">
-                                        <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
-                                    </p>
-                                </div>
+                        @if($bgHeaderCard ?? null)
+                            <div style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                margin: 0;
+                                background-image: url('{{ asset('config_media/' . $bgHeaderCard) }}');
+                                object-fit: fill;
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                mix-blend-mode: overlay;
+                                opacity: 0.5;
+                                z-index: 0;
+                            "></div>
+                        @endif
+
+                        <div class="d-flex align-items-center position-relative" style="z-index: 1;">
+                            <div class="flex-shrink-0 me-3">
+                                <img class="border border-2 border-white rounded-circle"
+                                    style="width: 65px; height: 65px; object-fit: cover;"
+                                    src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
+                                    alt="User Avatar">
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <h4 class="mb-0 text-white fw-bold">Statistik Penjualan per Lokasi</h4>
+                                <p class="mb-0 text-white-50 small">
+                                    <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
+                                </p>
                             </div>
                         </div>
 
-                        <div class="card-body p-0">
+                    </div>
+
+                        <div class="p-0 card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover mb-0 align-middle">
+                                <table class="table mb-0 align-middle table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th class="text-center" width="5%">No</th>
@@ -116,7 +165,7 @@
 
                                                 <td align="center" class="table-primary">
                                                     <a href="{{ route('dashboard.lokasi-penjualan-show', $lokasi['id']) }}"
-                                                        class="btn btn-primary btn-sm px-3 rounded-pill">
+                                                        class="px-3 btn btn-primary btn-sm rounded-pill">
                                                         Detail
                                                     </a>
                                                 </td>
@@ -126,7 +175,7 @@
                                         @endforeach
                                     </tbody>
                                     <tfoot class="table-dark">
-                                        <tr class="fw-bold border-top border-2">
+                                        <tr class="border-2 fw-bold border-top">
                                             <td colspan="2" class="text-end pe-3">TOTAL</td>
                                             <td></td>
                                             <td align="center">{{ $totalLokasi['jumlah'] }}</td>
@@ -151,17 +200,34 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card shadow-sm border-0 overflow-hidden mb-4">
-                        <div class="card-header bg-primary text-white p-3">
+                    <div class="mb-4 overflow-hidden border-0 shadow-sm card">
+                        <div class="p-3 text-white card-header bg-primary">
+                             @if($bgHeaderCard ?? null)
+                            <div style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                margin: 0;
+                                background-image: url('{{ asset('config_media/' . $bgHeaderCard) }}');
+                                object-fit: fill;
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                mix-blend-mode: overlay;
+                                opacity: 0.5;
+                                z-index: 0;
+                            "></div>
+                        @endif
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
-                                    <img class="rounded-circle border border-2 border-white"
+                                    <img class="border border-2 border-white rounded-circle"
                                         style="width: 65px; height: 65px; object-fit: cover;"
                                         src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
                                         alt="Avatar">
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold text-white">Grafik Penjualan</h4>
+                                    <h4 class="mb-0 text-white fw-bold">Grafik Penjualan</h4>
                                     <p class="mb-0 text-white-50 small">
                                         <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                     </p>
@@ -169,7 +235,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row mt-3 mb-4">
+                            <div class="mt-3 mb-4 row">
                                 <div class="col-5">
                                     <select class="form-control select-tahun" name="tahun" id="tahun">
                                         <option value="0">Semua Tahun</option>
@@ -188,17 +254,34 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="card shadow-sm border-0 overflow-hidden mb-4">
-                        <div class="card-header bg-success text-white p-3">
+                    <div class="mb-4 overflow-hidden border-0 shadow-sm card">
+                        <div class="p-3 text-white card-header bg-success">
+                             @if($bgHeaderCard ?? null)
+                            <div style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                margin: 0;
+                                background-image: url('{{ asset('config_media/' . $bgHeaderCard) }}');
+                                object-fit: fill;
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                mix-blend-mode: overlay;
+                                opacity: 0.5;
+                                z-index: 0;
+                            "></div>
+                        @endif
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
-                                    <img class="rounded-circle border border-2 border-white"
+                                    <img class="border border-2 border-white rounded-circle"
                                         style="width: 65px; height: 65px; object-fit: cover;"
                                         src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
                                         alt="Avatar">
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold text-white">Grafik Penjualan Marketing</h4>
+                                    <h4 class="mb-0 text-white fw-bold">Grafik Penjualan Marketing</h4>
                                     <p class="mb-0 text-white-50 small">
                                         <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                     </p>
@@ -206,7 +289,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row mt-3 mb-4">
+                            <div class="mt-3 mb-4 row">
                                 <div class="col-5">
                                     <select class="form-control select-tahun" name="tahun_2" id="tahun_2">
                                         <option value="0">Semua Tahun</option>
@@ -236,17 +319,34 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card shadow-sm border-0 overflow-hidden mb-4">
-                        <div class="card-header bg-primary text-white p-3">
+                    <div class="mb-4 overflow-hidden border-0 shadow-sm card">
+                        <div class="p-3 text-white card-header bg-primary">
+                             @if($bgHeaderCard ?? null)
+                            <div style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                margin: 0;
+                                background-image: url('{{ asset('config_media/' . $bgHeaderCard) }}');
+                                object-fit: fill;
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                mix-blend-mode: overlay;
+                                opacity: 0.5;
+                                z-index: 0;
+                            "></div>
+                        @endif
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
-                                    <img class="rounded-circle border border-2 border-white"
+                                    <img class="border border-2 border-white rounded-circle"
                                         style="width: 65px; height: 65px; object-fit: cover;"
                                         src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
                                         alt="User Avatar">
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold text-white">Statistik Status Progres</h4>
+                                    <h4 class="mb-0 text-white fw-bold">Statistik Status Progres</h4>
                                     <p class="mb-0 text-white-50 small">
                                         <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                     </p>
@@ -254,9 +354,9 @@
                             </div>
                         </div>
 
-                        <div class="card-body p-0">
+                        <div class="p-0 card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover mb-0 align-middle">
+                                <table class="table mb-0 align-middle table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th class="text-center" width="5%">No</th>
@@ -275,14 +375,14 @@
                                                 <td class="text-end">{{ $item['persentase'] }} %</td>
                                                 <td class="text-center">
                                                     <a href="{{ route('dashboard.customer-status-progres-show', $item['id_status_progres']) }}"
-                                                        class="btn btn-primary btn-sm text-white rounded-pill px-3">
+                                                        class="px-3 text-white btn btn-primary btn-sm rounded-pill">
                                                         Detail
                                                     </a>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="5" class="text-center py-2 text-muted">
+                                                <td colspan="5" class="py-2 text-center text-muted">
                                                     Belum ada data
                                                 </td>
                                             </tr>
@@ -295,18 +395,35 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="card shadow-sm border-0 overflow-hidden mb-4">
-                        <div class="card-header bg-success text-white p-3">
+                    <div class="mb-4 overflow-hidden border-0 shadow-sm card">
+                        <div class="p-3 text-white card-header bg-success">
+                             @if($bgHeaderCard ?? null)
+                            <div style="
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                margin: 0;
+                                background-image: url('{{ asset('config_media/' . $bgHeaderCard) }}');
+                                object-fit: fill;
+                                background-position: center;
+                                background-repeat: no-repeat;
+                                mix-blend-mode: overlay;
+                                opacity: 0.5;
+                                z-index: 0;
+                            "></div>
+                        @endif  
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
-                                    <img class="rounded-circle border border-2 border-white"
+                                    <img class="border border-2 border-white rounded-circle"
                                         style="width: 65px; height: 65px; object-fit: cover;"
                                         src="{{ asset('config_media/' . ($logo->nama_file ?? 'default.png')) }}"
                                         alt="User Avatar">
                                 </div>
 
                                 <div class="flex-grow-1">
-                                    <h4 class="mb-0 fw-bold text-white">Statistik Penjualan Marketing</h4>
+                                    <h4 class="mb-0 text-white fw-bold">Statistik Penjualan Marketing</h4>
                                     <p class="mb-0 text-white-50 small">
                                         <i class="bi bi-calendar-event me-1"></i> Per {{ $dateNow }}
                                     </p>
@@ -314,9 +431,9 @@
                             </div>
                         </div>
 
-                        <div class="card-body p-0">
+                        <div class="p-0 card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover mb-0 align-middle">
+                                <table class="table mb-0 align-middle table-bordered table-striped table-hover">
                                     <thead>
                                         <tr>
                                             <th class="text-center" scope="col" width="5%">No</th>
@@ -335,14 +452,14 @@
                                                 <td class="text-end">{{ $marketing['persentase'] }} %</td>
                                                 <td class="text-center">
                                                     <a href="{{ route('dashboard.customer-marketing-show', $marketing['id_marketing']) }}"
-                                                        class="btn btn-success btn-sm text-white rounded-pill px-3">
+                                                        class="px-3 text-white btn btn-success btn-sm rounded-pill">
                                                         Detail
                                                     </a>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="5" class="text-center py-2 text-muted">
+                                                <td colspan="5" class="py-2 text-center text-muted">
                                                     Belum ada data
                                                 </td>
                                             </tr>

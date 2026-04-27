@@ -13,7 +13,7 @@
         }
 
         .siteplan-container {
-            max-width: 1200px;
+            max-width: full;
             margin: 0 auto;
             padding: 30px 15px 50px;
         }
@@ -21,14 +21,10 @@
         .siteplan-card {
             border: none;
             border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.97);
         }
 
         .siteplan-header {
-            background: linear-gradient(135deg, #0d3b66 0%, #1e5fa8 50%, #3a86ff 100%);
             padding: 24px 30px;
             text-align: center;
         }
@@ -42,7 +38,7 @@
         }
 
         .siteplan-header p {
-            color: rgba(255, 255, 255, 0.8);
+            color: #fff;
             margin: 8px 0 0;
             font-size: 0.85rem;
         }
@@ -51,15 +47,11 @@
             padding: 20px 30px 30px;
         }
 
-        /* Tabs Styling */
-        .nav-tabs {
-            border-bottom: 2px solid #e8f5e9;
-            gap: 5px;
-        }
+
 
         .nav-tabs .nav-link {
             border: none;
-            color: #6b7280;
+            color: #ffff;
             font-weight: 500;
             padding: 10px 20px;
             border-radius: 8px 8px 0 0;
@@ -73,14 +65,13 @@
 
         .nav-tabs .nav-link.active {
             background-color: transparent;
-            color: #1e5fa8;
+            color: #ffff;
             border-bottom: 3px solid #1e5fa8;
             font-weight: 700;
         }
 
         /* SVG Container */
         .svg-card-wrapper {
-            background: #fff;
             border-radius: 12px;
             border: 1px solid #e5e7eb;
             overflow: hidden;

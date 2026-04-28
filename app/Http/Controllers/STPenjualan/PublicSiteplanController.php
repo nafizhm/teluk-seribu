@@ -6,11 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\KavlingPeta;
 use App\Models\LokasiKavling;
 use App\Models\ProgresListPenjualan;
-use Illuminate\Http\Request;
 use App\Models\PengaturanMedia;
-use App\Models\Piutang;
-use App\Models\Pemasukan;
-
 class PublicSiteplanController extends Controller
 {
     /**
@@ -18,11 +14,11 @@ class PublicSiteplanController extends Controller
      */
     public function index()
 {
-    $lokasiKavling = LokasiKavling::with([
-        'kavlingPeta.customer.progres', // ← sesuaikan dengan yang dipakai blade
-    ])
-    ->orderBy('urutan', 'asc')
-    ->get();
+        $lokasiKavling = LokasiKavling::with([
+            'kavlingPeta.customer.piutangs',
+        ])
+        ->orderBy('urutan', 'asc')
+        ->get();
 
     $legend = ProgresListPenjualan::whereNotNull('warna')
         ->where('warna', '!=', '')

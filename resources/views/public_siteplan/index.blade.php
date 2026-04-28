@@ -1,6 +1,11 @@
 @extends('layouts.app')
-
 @section('title', 'Siteplan Penjualan - Gia Group')
+
+@php
+    $logo = DB::table('konfigurasi_media')
+        ->where('jenis_data', 'logo website')
+        ->value('nama_file');
+@endphp
 
 @push('styles')
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +17,7 @@
             min-height: 100vh;
         }
 
-        .siteplan-container {
+        .siteplan-container {Siteplan Penjualan
             max-width: full;
             margin: 0 auto;
             padding: 30px 15px 50px;
@@ -25,7 +30,7 @@
         }
 
         .siteplan-header {
-            padding: 24px 30px;
+            padding: 2px 30px 30px;
             text-align: center;
         }
 
@@ -94,6 +99,7 @@
             cursor: grab;
             transition: transform 0.1s ease-out;
             touch-action: none;
+            transform-origin: center center;
             user-select: none;
             -webkit-user-drag: none;
         }
@@ -204,7 +210,7 @@
         .popup-title {
             font-weight: 700;
             font-size: 0.95rem;
-            color: #1a5c30;
+            color: #1e5fa8;
             margin-bottom: 15px;
         }
 
@@ -237,7 +243,7 @@
         .popup-price .value {
             font-size: 1rem;
             font-weight: 800;
-            color: #16a34a;
+            color: #1e5fa8;
         }
 
         .btn-reset {
@@ -288,20 +294,75 @@
                 right: 20px;
             }
         }
+        .logo-fixed {
+            position: fixed;
+            top: 20px;
+            left: 45px;
+            background: white;
+            padding: 7px;
+            border-radius: 100%;
+            height: 50px;
+            width: 50px;
+            box-shadow: #1118275d 0px 3px 3px;
+            object-fit: cover;
+            z-index: 9999;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+        }
+        .kavling-active path,
+        .kavling-active polygon {
+            stroke: #00e0ff !important;
+            stroke-width: 3 !important;
+            filter: drop-shadow(0 0 6px rgba(0, 224, 255, 0.8));
+        }
+
+        .kavling-active {
+            animation: pulseKav 1.5s infinite;
+        }
+
+        @keyframes pulseKav {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+            100% { filter: brightness(1); }
+        }
+        @keyframes pulseKav {
+            0% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+            100% { filter: brightness(1); }
+        }
+        .popup-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+        .popup-arrow.arrow-bottom {
+            bottom: -10px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #fff;
+        }
+        .popup-arrow.arrow-top {
+            top: -10px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #fff;
+        }
     </style>
 @endpush
 
 @section('content')
     <div class="siteplan-container">
         <div class="siteplan-card">
-            {{-- Header (Matching Booking) --}}
             <div class="siteplan-header">
-                <h4>Siteplan Penjualan</h4>
-                <p>Silakan pilih lokasi perumahan dan klik pada kavling untuk melihat detail informasi.</p>
+                <img
+                    class="logo-fixed"
+                    src="{{ asset('config_media/' . $logo) }}"
+                    alt="{{ $namaPerusahaan ?? 'Logo Perusahaan' }}">
             </div>
-
             <div class="siteplan-body">
-                {{-- Tabs --}}
                 <ul class="nav nav-tabs" id="siteplan-tabs" role="tablist">
                     @foreach ($lokasiKavling as $index => $kav)
                         <li class="nav-item">
@@ -330,19 +391,28 @@
 
                                         @foreach ($kav->kavlingPeta as $pt)
                                           @php
-                                                $allowedStatus = ['Ready', 'Kredit', 'Cash Tempo', 'Kredit Macet', 'Cash Keras'];
-                                                $warna = '#ffffff';
+                                            $warna = '#ffffff';
 
-                                                $customer = $pt->customer->first(); // ambil customer pertama dari pivot
+                                            $customer = $pt->customer->first();
 
-                                                if ($customer && $customer->progres && in_array($customer->progres->status_progres, $allowedStatus)) {
-                                                    $warna = $customer->progres->warna ?? '#ffffff';
-                                                } elseif ($pt->status == 1) {
-                                                    $warna = '#42f202';
+                                            if ($customer) {
+
+                                                $isLunas = $customer->piutangs->where('sisa_bayar', 0)->count() > 0;
+
+                                                if ($isLunas) {
+                                                    $warna = '#3b3b3b';
                                                 }
-                                            @endphp
 
-                                            <a href="javascript:void(0);" class="detail-button {{ $pt->siteplan_text_color === '#ffffff' ? 'text-white-svg' : '' }}"
+                                                elseif ($customer->id_status_progres == 1) {
+                                                    $warna = '#919191';
+                                                }
+                                            }
+                                        @endphp
+
+                                            <a href="javascript:void(0);"
+                                                class="detail-button
+                                                {{ $pt->siteplan_text_color === '#ffffff' ? 'text-white-svg' : '' }}
+                                                {{ $warna === '#ffffff' ? 'kavling-white' : '' }}"
                                                 data-url="{{ route('public.siteplan.show', $pt->id) }}">
                                                 {!! str_replace(
                                                     ['[[1]]', '[[2]]', '[[3]]', '[[4]]'],
@@ -371,20 +441,28 @@
     <div class="hidden legend-box" id="legendBox">
     <div class="legend-title">Keterangan Status</div>
 
-          @foreach ($legend as $item)
-                    <div class="legend-item">
-                        <div class="legend-color me-2" style="background-color: {{ $item->warna }};"></div>
-                        <span class="text-black">{{ $item->status_progres }}</span>
-                    </div>
-                @endforeach
+         <div class="legend-item">
+            <div class="legend-color" style="background-color: #ffffff;"></div>
+            <div class="legend-label">Ready</div>
+        </div>
+
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #919191;"></div>
+            <div class="legend-label">Booking Fee</div>
+        </div>
+
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #3b3b3b;"></div>
+            <div class="legend-label">Terjual</div>
+        </div>
 
         <button class="mt-3 btn btn-xs btn-block text-muted" onclick="toggleLegend()">Tutup</button>
     </div>
 
     {{-- Detail Popup --}}
-    {{-- Detail Popup --}}
 <div id="popupOverlay">
     <div id="popupBox">
+        <div class="popup-arrow"></div>
         <button id="popupClose" onclick="closePopup()">&times;</button>
 
         <div class="popup-title">Detail Kavling</div>
@@ -549,6 +627,53 @@
                 });
             });
         }
+
     </script>
+    <script id="pinchZoomSvg">
+        document.querySelectorAll('.svg-container').forEach(container => {
+            const svg = container.querySelector('svg');
+            if (!svg) return;
+
+            let scale = 1;
+            let startDistance = 0;
+            let isPinching = false;
+
+            function getDistance(touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            container.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 2) {
+                    isPinching = true;
+                    startDistance = getDistance(e.touches);
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchmove', function(e) {
+                if (isPinching && e.touches.length === 2) {
+                    e.preventDefault();
+
+                    const newDistance = getDistance(e.touches);
+                    let zoomFactor = newDistance / startDistance;
+
+                    let newScale = scale * zoomFactor;
+
+                    // batas zoom
+                    newScale = Math.max(0.5, Math.min(newScale, 5));
+
+                    svg.style.transform = `scale(${newScale})`;
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchend', function(e) {
+                if (isPinching) {
+                    scale = parseFloat(svg.style.transform.replace(/[^0-9.]/g, '')) || scale;
+                    isPinching = false;
+                }
+            });
+        });
+        </script>
     <script src="{{ asset('assets/svg_1.js') }}"></script>
 @endpush

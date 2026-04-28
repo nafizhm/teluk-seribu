@@ -99,7 +99,8 @@
             cursor: grab;
             transition: transform 0.1s ease-out;
             touch-action: none;
-            transform-origin: center center;
+             transform-origin: center center;
+            will-change: transform;
             user-select: none;
             -webkit-user-drag: none;
         }
@@ -635,8 +636,15 @@
             if (!svg) return;
 
             let scale = 1;
+            let translateX = 0;
+            let translateY = 0;
+
             let startDistance = 0;
             let isPinching = false;
+            let isDragging = false;
+
+            let lastTouchX = 0;
+            let lastTouchY = 0;
 
             function getDistance(touches) {
                 const dx = touches[0].clientX - touches[1].clientX;
@@ -644,10 +652,18 @@
                 return Math.sqrt(dx * dx + dy * dy);
             }
 
+            function updateTransform() {
+                svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            }
+
             container.addEventListener('touchstart', function(e) {
                 if (e.touches.length === 2) {
                     isPinching = true;
                     startDistance = getDistance(e.touches);
+                } else if (e.touches.length === 1 && scale > 1) {
+                    isDragging = true;
+                    lastTouchX = e.touches[0].clientX;
+                    lastTouchY = e.touches[0].clientY;
                 }
             }, { passive: false });
 
@@ -656,22 +672,38 @@
                     e.preventDefault();
 
                     const newDistance = getDistance(e.touches);
-                    let zoomFactor = newDistance / startDistance;
+                    const zoomFactor = newDistance / startDistance;
 
                     let newScale = scale * zoomFactor;
-
-                    // batas zoom
                     newScale = Math.max(0.5, Math.min(newScale, 5));
 
-                    svg.style.transform = `scale(${newScale})`;
+                    scale = newScale;
+                    startDistance = newDistance;
+
+                    updateTransform();
                 }
+
+                else if (isDragging && e.touches.length === 1) {
+                    e.preventDefault();
+
+                    const touch = e.touches[0];
+                    const dx = touch.clientX - lastTouchX;
+                    const dy = touch.clientY - lastTouchY;
+
+                    translateX += dx;
+                    translateY += dy;
+
+                    lastTouchX = touch.clientX;
+                    lastTouchY = touch.clientY;
+
+                    updateTransform();
+                }
+
             }, { passive: false });
 
-            container.addEventListener('touchend', function(e) {
-                if (isPinching) {
-                    scale = parseFloat(svg.style.transform.replace(/[^0-9.]/g, '')) || scale;
-                    isPinching = false;
-                }
+            container.addEventListener('touchend', function() {
+                isPinching = false;
+                isDragging = false;
             });
         });
         </script>

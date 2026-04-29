@@ -622,14 +622,14 @@
                         <div class="stat-num">312<span></span></div>
                         <div class="stat-lbl">Total Kavling</div>
                     </div>
-                    <div>
+                    {{-- <div>
                         <div class="stat-num">48<span></span></div>
                         <div class="stat-lbl">Kavling Terjual</div>
                     </div>
                     <div>
                         <div class="stat-num"><span>15</span></div>
                         <div class="stat-lbl">Kavling Ready</div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Siteplan Penjualan - Gia Group')
+@section('title', 'Siteplan Penjualan - Teluk Seribu')
 
 @php
     $logo = DB::table('konfigurasi_media')
@@ -17,8 +17,8 @@
             min-height: 100vh;
         }
 
-        .siteplan-container {Siteplan Penjualan
-            max-width: full;
+        .siteplan-container {
+            max-width: 90%;
             margin: 0 auto;
             padding: 30px 15px 50px;
         }
@@ -28,53 +28,9 @@
             border-radius: 16px;
             overflow: hidden;
         }
-
-        .siteplan-header {
-            padding: 2px 30px 30px;
-            text-align: center;
-        }
-
-        .siteplan-header h4 {
-            color: #fff;
-            font-weight: 700;
-            margin: 0;
-            font-size: 1.25rem;
-            letter-spacing: 0.5px;
-        }
-
-        .siteplan-header p {
-            color: #fff;
-            margin: 8px 0 0;
-            font-size: 0.85rem;
-        }
-
         .siteplan-body {
             padding: 20px 30px 30px;
         }
-
-
-
-        .nav-tabs .nav-link {
-            border: none;
-            color: #ffff;
-            font-weight: 500;
-            padding: 10px 20px;
-            border-radius: 8px 8px 0 0;
-            transition: all 0.2s;
-        }
-
-        .nav-tabs .nav-link:hover {
-            background-color: #f9fafb;
-            color: #1e5fa8;
-        }
-
-        .nav-tabs .nav-link.active {
-            background-color: transparent;
-            color: #ffff;
-            border-bottom: 3px solid #1e5fa8;
-            font-weight: 700;
-        }
-
         /* SVG Container */
         .svg-card-wrapper {
             border-radius: 12px;
@@ -86,7 +42,7 @@
 
         .svg-view-container {
             width: 100%;
-            height: 65vh;
+            height: 90vh;
             min-height: 500px;
             overflow: hidden;
             position: relative;
@@ -297,15 +253,16 @@
         }
         .logo-fixed {
             position: fixed;
-            top: 20px;
-            left: 45px;
+            top: 0;
             background: white;
-            padding: 7px;
-            border-radius: 100%;
-            height: 50px;
-            width: 50px;
-            box-shadow: #1118275d 0px 3px 3px;
-            object-fit: cover;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            border-bottom-right-radius: 100%;
+            border-bottom-left-radius: 100%;
+            height: 90px;
+            width: 90px;
+            box-shadow: #11182728 0px 3px 0;
+            object-fit: contain;
             z-index: 9999;
         }
         .legend-color {
@@ -351,6 +308,16 @@
             border-right: 10px solid transparent;
             border-bottom: 10px solid #fff;
         }
+        .siteplan-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            position: relative;
+            bottom: 20px;
+            color: #fff;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
     </style>
 @endpush
 
@@ -364,16 +331,9 @@
                     alt="{{ $namaPerusahaan ?? 'Logo Perusahaan' }}">
             </div>
             <div class="siteplan-body">
-                <ul class="nav nav-tabs" id="siteplan-tabs" role="tablist">
-                    @foreach ($lokasiKavling as $index => $kav)
-                        <li class="nav-item">
-                            <a class="nav-link {{ $index == 0 ? 'active' : '' }}" id="tab-{{ $kav->id }}"
-                                data-toggle="pill" href="#pane-{{ $kav->id }}" role="tab">
-                                {{ $kav->nama_kavling }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
+               <div class="siteplan-title">
+                    {{ $lokasiKavling->first()->nama_kavling ?? '' }}
+                </div>
 
                 <div class="tab-content" id="siteplan-tabContent">
                     @foreach ($lokasiKavling as $index => $kav)
@@ -390,36 +350,93 @@
                                     @if ($kav->masterSvg)
                                         {!! str_replace(['[[lebar]]', '[[tinggi]]'], ['100%', '100%'], $kav->masterSvg->header_svg) !!}
 
-                                        @foreach ($kav->kavlingPeta as $pt)
-                                          @php
-                                            $warna = '#ffffff';
+                                        @php
+                                            if (!function_exists('adjustBrightness')) {
+                                                function adjustBrightness($hex, $steps) {
+                                                    $steps = max(-255, min(255, $steps));
 
-                                            $customer = $pt->customer->first();
+                                                    $hex = str_replace('#', '', $hex);
 
-                                            if ($customer) {
+                                                    $r = hexdec(substr($hex, 0, 2));
+                                                    $g = hexdec(substr($hex, 2, 2));
+                                                    $b = hexdec(substr($hex, 4, 2));
 
-                                                $isLunas = $customer->piutangs->where('sisa_bayar', 0)->count() > 0;
+                                                    $r = max(0, min(255, $r + $steps));
+                                                    $g = max(0, min(255, $g + $steps));
+                                                    $b = max(0, min(255, $b + $steps));
 
-                                                if ($isLunas) {
-                                                    $warna = '#3b3b3b';
-                                                }
-
-                                                elseif ($customer->id_status_progres == 1) {
-                                                    $warna = '#919191';
+                                                    return '#' .
+                                                        str_pad(dechex($r), 2, '0', STR_PAD_LEFT) .
+                                                        str_pad(dechex($g), 2, '0', STR_PAD_LEFT) .
+                                                        str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
                                                 }
                                             }
                                         @endphp
+
+                                        @foreach ($kav->kavlingPeta as $pt)
+
+                                            @php
+                                                $warna = '#ffffff';
+
+                                                $customer = $pt->customer->first();
+
+                                                if ($customer) {
+
+                                                    $isLunas = $customer->piutangs->where('sisa_bayar', 0)->count() > 0;
+
+                                                    if ($isLunas) {
+                                                        $warna = '#3b3b3b'; // SOLD
+                                                    }
+
+                                                    elseif ($customer->id_status_progres == 1) {
+                                                        $warna = '#919191'; // BOOKING
+                                                    }
+                                                }
+
+                                                if ($warna === '#ffffff') {
+
+                                                    preg_match('/^[A-Z]+/', $pt->kode_kavling, $match);
+                                                    $blok = $match[0] ?? 'X';
+
+                                                    $palette = [
+                                                        '#e5e52a',
+                                                        '#b39ddb',
+                                                        '#e53935',
+                                                        '#2ecc71',
+                                                        '#2e6da4',
+                                                        '#f97316',
+                                                    ];
+
+                                                    $blokIndex = ord($blok[0]) - ord('A');
+
+                                                    $baseColor = $palette[$blokIndex % count($palette)];
+
+                                                    $urutan = intval(preg_replace('/[^0-9]/', '', $pt->kode_kavling));
+
+                                                    $shade = floor(($urutan - 1) / 8) % 2;
+
+                                                    if ($shade == 1) {
+                                                        $warna = adjustBrightness($baseColor, 0);
+                                                    } else {
+                                                        $warna = $baseColor;
+                                                    }
+                                                }
+                                            @endphp
 
                                             <a href="javascript:void(0);"
                                                 class="detail-button
                                                 {{ $pt->siteplan_text_color === '#ffffff' ? 'text-white-svg' : '' }}
                                                 {{ $warna === '#ffffff' ? 'kavling-white' : '' }}"
                                                 data-url="{{ route('public.siteplan.show', $pt->id) }}">
+
                                                 {!! str_replace(
                                                     ['[[1]]', '[[2]]', '[[3]]', '[[4]]'],
                                                     [$pt->map, $warna, $pt->matrik, $pt->kode_kavling],
-                                                    $pt->jenis_map == 'polygon' ? $kav->masterSvg->polygon_svg : $kav->masterSvg->path_svg,
+                                                    $pt->jenis_map == 'polygon'
+                                                        ? $kav->masterSvg->polygon_svg
+                                                        : $kav->masterSvg->path_svg,
                                                 ) !!}
+
                                             </a>
 
                                         @endforeach

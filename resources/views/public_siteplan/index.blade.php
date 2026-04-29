@@ -286,10 +286,27 @@
             50% { filter: brightness(1.3); }
             100% { filter: brightness(1); }
         }
-        @keyframes pulseKav {
-            0% { filter: brightness(1); }
-            50% { filter: brightness(1.3); }
-            100% { filter: brightness(1); }
+
+        /* Sold Badge Style from Index 2 */
+        .status-badge-sold {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .sold-badge {
+            background: #dc3545;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .sold-badge i {
+            margin-right: 6px;
         }
         .popup-arrow {
             position: absolute;
@@ -380,8 +397,12 @@
 
                                                 $customer = $pt->customer->first();
 
-                                                if ($customer) {
+                                                // Force SOLD for block P and Q
+                                                $isPQ = str_starts_with($pt->kode_kavling, 'P') || str_starts_with($pt->kode_kavling, 'Q');
 
+                                                if ($isPQ) {
+                                                    $warna = '#3b3b3b'; // SOLD
+                                                } elseif ($customer) {
                                                     $isLunas = $customer->piutangs->where('sisa_bayar', 0)->count() > 0;
 
                                                     if ($isLunas) {
@@ -425,7 +446,7 @@
 
                                             <a href="javascript:void(0);"
                                                 class="detail-button
-                                                {{ $pt->siteplan_text_color === '#ffffff' ? 'text-white-svg' : '' }}
+                                                {{ ($pt->siteplan_text_color === '#ffffff' || $warna === '#3b3b3b') ? 'text-white-svg' : '' }}
                                                 {{ $warna === '#ffffff' ? 'kavling-white' : '' }}"
                                                 data-url="{{ route('public.siteplan.show', $pt->id) }}">
 
@@ -511,11 +532,10 @@
             <span class="value">Rp <span id="p_hrg_jual">0</span></span>
         </div>
 
-        {{-- Sold badge, tersembunyi secara default --}}
-        <div id="mark_sold_container" style="display:none; margin-top:12px; text-align:center;">
-            <span class="px-3 py-2 badge badge-danger" style="font-size:0.85rem;">
-                Kavling Sudah Terjual
-            </span>
+        <div id="mark_sold_container" class="status-badge-sold">
+            <div class="sold-badge">
+                <i class="fas fa-times-circle"></i> UNIT TERJUAL (SOLD)
+            </div>
         </div>
     </div>
 </div>

@@ -47,7 +47,7 @@ class PublicSiteplanController extends Controller
                 'luas_tanah'     => $data->luas_tanah ?? 0,
                 'luas_bangunan'  => $data->luas_bangunan ?? 0,
                 'hrg_jual'       => $data->hrg_jual ?? 0,
-                'status'         => $data->status,
+                'status'         => (str_starts_with($data->kode_kavling, 'P') || str_starts_with($data->kode_kavling, 'Q')) ? 2 : $data->status,
                 'lokasi'         => [
                     'nama_kavling' => $data->lokasi->nama_kavling ?? '-',
                 ],

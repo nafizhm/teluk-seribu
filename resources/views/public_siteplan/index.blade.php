@@ -203,11 +203,17 @@
             color: #1e5fa8;
         }
 
-        .btn-reset {
+        .svg-controls {
             position: absolute;
             top: 15px;
             left: 15px;
             z-index: 10;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-reset, .btn-rotate {
             background: rgba(255,255,255,0.9);
             border: 1px solid #d1d5db;
             border-radius: 6px;
@@ -217,12 +223,19 @@
             color: #374151;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
         }
 
-        .btn-reset:hover {
+        .btn-reset:hover, .btn-rotate:hover {
             background: #fff;
             border-color: #1e5fa8;
             color: #1e5fa8;
+        }
+
+        .btn-rotate .rotate-icon {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .text-white-svg text {
@@ -359,9 +372,14 @@
 
                             <div class="svg-card-wrapper">
                                 <div class="svg-view-container svg-container" id="svg-container-{{ $kav->id }}">
-                                    <button class="btn btn-reset reset-button">
-                                        <i class="mr-1 fas fa-sync-alt"></i> Reset Siteplan
-                                    </button>
+                                    <div class="svg-controls">
+                                        <button class="btn btn-reset reset-button">
+                                            <i class="mr-1 fas fa-sync-alt"></i> Reset
+                                        </button>
+                                        <button class="btn btn-rotate rotate-button">
+                                            <span class="rotate-icon"><i class="fas fa-redo"></i></span> Putar
+                                        </button>
+                                    </div>
 
                                     {{-- SVG Render --}}
                                     @if ($kav->masterSvg)
@@ -667,82 +685,5 @@
         }
 
     </script>
-    <script id="pinchZoomSvg">
-        document.querySelectorAll('.svg-container').forEach(container => {
-            const svg = container.querySelector('svg');
-            if (!svg) return;
-
-            let scale = 1;
-            let translateX = 0;
-            let translateY = 0;
-
-            let startDistance = 0;
-            let isPinching = false;
-            let isDragging = false;
-
-            let lastTouchX = 0;
-            let lastTouchY = 0;
-
-            function getDistance(touches) {
-                const dx = touches[0].clientX - touches[1].clientX;
-                const dy = touches[0].clientY - touches[1].clientY;
-                return Math.sqrt(dx * dx + dy * dy);
-            }
-
-            function updateTransform() {
-                svg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-            }
-
-            container.addEventListener('touchstart', function(e) {
-                if (e.touches.length === 2) {
-                    isPinching = true;
-                    startDistance = getDistance(e.touches);
-                } else if (e.touches.length === 1 && scale > 1) {
-                    isDragging = true;
-                    lastTouchX = e.touches[0].clientX;
-                    lastTouchY = e.touches[0].clientY;
-                }
-            }, { passive: false });
-
-            container.addEventListener('touchmove', function(e) {
-                if (isPinching && e.touches.length === 2) {
-                    e.preventDefault();
-
-                    const newDistance = getDistance(e.touches);
-                    const zoomFactor = newDistance / startDistance;
-
-                    let newScale = scale * zoomFactor;
-                    newScale = Math.max(0.5, Math.min(newScale, 5));
-
-                    scale = newScale;
-                    startDistance = newDistance;
-
-                    updateTransform();
-                }
-
-                else if (isDragging && e.touches.length === 1) {
-                    e.preventDefault();
-
-                    const touch = e.touches[0];
-                    const dx = touch.clientX - lastTouchX;
-                    const dy = touch.clientY - lastTouchY;
-
-                    translateX += dx;
-                    translateY += dy;
-
-                    lastTouchX = touch.clientX;
-                    lastTouchY = touch.clientY;
-
-                    updateTransform();
-                }
-
-            }, { passive: false });
-
-            container.addEventListener('touchend', function() {
-                isPinching = false;
-                isDragging = false;
-            });
-        });
-        </script>
     <script src="{{ asset('assets/svg_1.js') }}"></script>
 @endpush

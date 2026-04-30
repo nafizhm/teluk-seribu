@@ -685,5 +685,5 @@
         }
 
     </script>
-    <script src="{{ asset('assets/svg_1.js') }}"></script>
+    <script src="{{ asset('assets/svg_1.js') }}?v={{ time() }}"></script>
 @endpush
